@@ -11,11 +11,11 @@ const getPost = asyncHandler(async (req, res) => {
     .populate("member_id")
     .populate("section_id");
   if (!post) return res.status(404).send("Post not found");
-  res.send(post); // todo replace send with json
+  res.json({ post });
 });
 
 const setPost = asyncHandler(async (req, res) => {
-  const { title, text, member_id, section_id } = req.body;
+  const { title, text, section_id } = req.body;
   /*const result = validationResult(req)
     if (!result.isEmpty()){
         return res.status(400).json({ success : false, message : result.array()})
@@ -23,10 +23,10 @@ const setPost = asyncHandler(async (req, res) => {
   const post = await Post.create({
     title: title,
     text: text,
-    member_id: member_id,
+    member_id: req.userid,
     section_id: section_id,
   });
-  res.status(200).json(post); // todo change 200 to 201
+  res.status(201).json(post); // todo change 200 to 201
 });
 
 module.exports = { getPost, setPost };

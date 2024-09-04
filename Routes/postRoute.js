@@ -3,6 +3,7 @@ const postRouter = express.Router();
 const { param, body } = require("express-validator");
 const { getPost, setPost } = require("../Controllers/postControllers");
 const validateError = require("../validator");
+const { authenticateToken } = require("../jwtAuthenticator");
 
 postRouter
   .route("/")
@@ -12,12 +13,13 @@ postRouter
       .withMessage("title or text should be a string")
       .notEmpty()
       .withMessage("fields are empty!"),
-    body("member_id", "section_id")
+    body("section_id")
       .notEmpty()
       .withMessage("Ids are empty!")
       .isMongoId()
       .withMessage("Id formats are incorrect!"),
     validateError,
+    authenticateToken,
     setPost
   );
 postRouter
