@@ -7,7 +7,10 @@ const getPost = asyncHandler(async (req, res) => {
     if (!result.isEmpty()){
         return res.status(400).json({success : false, message : result.array()})
     }*/
-  const post = await Post.findById(req.params.id)
+  /*const post = await Post.findById(req.params.id)
+    .populate("member_id")
+    .populate("section_id");*/
+  const post = await Post.find({ member_id: req.userid })
     .populate("member_id")
     .populate("section_id");
   if (!post) return res.status(404).send("Post not found");

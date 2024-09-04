@@ -22,16 +22,16 @@ postRouter
     authenticateToken,
     setPost
   );
-postRouter
-  .route("/:id")
-  .get(
+postRouter.route("/").get(
+  /*
     param("id")
       .notEmpty()
       .withMessage("id is empty!")
       .isMongoId()
-      .withMessage("invalid Id format!"),
-    validateError,
-    getPost
-  );
+      .withMessage("invalid Id format!"),*/
+  validateError,
+  authenticateToken,
+  getPost
+);
 
 module.exports = postRouter;
