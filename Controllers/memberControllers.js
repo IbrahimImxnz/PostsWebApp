@@ -60,7 +60,8 @@ const login = asyncHandler(async (req, res) => {
     const accessToken = generateAccessToken({ id: member._id });
     res.json({
       success: true,
-      message: `Login successful, access token: ${accessToken}`,
+      message: `Login successful`,
+      access_token: accessToken,
     });
   } else {
     res.status(500).json({
