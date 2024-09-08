@@ -18,10 +18,12 @@ const postSchema = mongoose.Schema(
     },
     member_id: {
       type: mongoose.Types.ObjectId,
+      required: true,
       ref: Member, // todo change to string (collection name)
     },
     section_id: {
       type: mongoose.Types.ObjectId,
+      required: true,
       ref: Section, // todo change to string (collection name)
     },
   },
