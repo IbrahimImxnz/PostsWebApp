@@ -13,9 +13,12 @@ const getPost = asyncHandler(async (req, res) => {
   const post = await Post.find({ member_id: req.userid })
     .populate("member_id")
     .populate("section_id");
-  if (!post) return res.status(404).send("Post not found");
+  if (!post)
+    return res.status(404).json({ success: false, message: "post not found" });
   res.json({ post });
 });
+// todo add getspecificpost
+// todo getpostbysection
 
 const setPost = asyncHandler(async (req, res) => {
   const { title, text, section_id } = req.body;

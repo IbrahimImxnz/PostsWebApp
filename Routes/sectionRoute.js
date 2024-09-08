@@ -3,6 +3,7 @@ const sectionRouter = express.Router();
 const { param, body } = require("express-validator");
 const { getSection, setSection } = require("../Controllers/sectionControllers");
 const validateError = require("../validator");
+const { authenticateToken } = require("../jwtAuthenticator");
 
 sectionRouter
   .route("/")
@@ -13,18 +14,19 @@ sectionRouter
       .notEmpty()
       .withMessage("fields are empty!"),
     validateError,
+    authenticateToken,
     setSection
   );
-sectionRouter
-  .route("/:id")
-  .get(
+sectionRouter.route("/").get(
+  /*
     param("id")
       .notEmpty()
       .withMessage("id is empty!")
       .isMongoId()
-      .withMessage("invalid Id format!"),
-    validateError,
-    getSection
-  );
+      .withMessage("invalid Id format!"),*/
+  validateError,
+  authenticateToken,
+  getSection
+);
 
 module.exports = sectionRouter;
