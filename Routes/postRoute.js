@@ -1,28 +1,27 @@
 const express = require("express");
 const postRouter = express.Router();
-const { param, body } = require("express-validator");
 const {
   getPost,
   setPost,
   getPostByTitle,
   getPostBySection,
+  updatePost,
 } = require("../Controllers/postControllers");
-const validateError = require("../validator");
+const validateError = require("../Validators/validator");
+const {
+  checkSectionId,
+  checkText,
+  checkTitle,
+} = require("../Validators/postValidator");
+
 const { authenticateToken } = require("../jwtAuthenticator");
 
 postRouter
   .route("/")
   .post(
-    body("title", "text")
-      .isString()
-      .withMessage("title or text should be a string")
-      .notEmpty()
-      .withMessage("fields are empty!"),
-    body("section_id")
-      .notEmpty()
-      .withMessage("Ids are empty!")
-      .isMongoId()
-      .withMessage("Id formats are incorrect!"),
+    checkTitle,
+    checkText,
+    checkSectionId,
     validateError,
     authenticateToken,
     setPost
@@ -47,5 +46,14 @@ postRouter
 postRouter
   .route("/section/:section")
   .get(validateError, authenticateToken, getPostBySection);
+
+postRouter.route("/update/:id").put(
+  checkTitle, //.optional({ values: "falsy" }),
+  checkText, //.optional({ values: "falsy" }),
+  checkSectionId, //.optional({ values: "falsy" }),
+  validateError,
+  authenticateToken,
+  updatePost
+);
 
 module.exports = postRouter;

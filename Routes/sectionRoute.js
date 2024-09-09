@@ -2,7 +2,7 @@ const express = require("express");
 const sectionRouter = express.Router();
 const { param, body } = require("express-validator");
 const { getSection, setSection } = require("../Controllers/sectionControllers");
-const validateError = require("../validator");
+const validateError = require("../Validators/validator");
 const { authenticateToken } = require("../jwtAuthenticator");
 
 sectionRouter

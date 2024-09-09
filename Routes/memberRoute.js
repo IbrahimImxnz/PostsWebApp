@@ -6,7 +6,7 @@ const {
   setMember,
   login,
 } = require("../Controllers/memberControllers");
-const validateError = require("../validator");
+const validateError = require("../Validators/validator");
 const { authenticateToken } = require("../jwtAuthenticator");
 
 memberRouter

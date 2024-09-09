@@ -66,4 +66,26 @@ const setPost = asyncHandler(async (req, res) => {
   res.status(201).json(post); // todo change 200 to 201
 });
 
-module.exports = { getPost, setPost, getPostByTitle, getPostBySection };
+const updatePost = asyncHandler(async (req, res) => {
+  const { title, text, section_id } = req.body;
+
+  const post = await Post.findById(req.params.id);
+  if (!post)
+    return res.status(404).json({ success: false, message: "post not found" });
+  // could use findByIdAndUpdate
+  if (title) post.title = title;
+  if (text) post.text = text;
+  if (section_id) post.section_id = section_id;
+
+  await post.save();
+
+  res.json({ success: true, data: post, message: "Post updated successfully" });
+});
+
+module.exports = {
+  getPost,
+  setPost,
+  getPostByTitle,
+  getPostBySection,
+  updatePost,
+};
