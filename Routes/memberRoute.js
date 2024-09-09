@@ -5,21 +5,19 @@ const {
   getMember,
   setMember,
   login,
+  updateMember,
 } = require("../Controllers/memberControllers");
 const validateError = require("../Validators/validator");
+const {
+  usernameChecker,
+  passwordChecker,
+} = require("../Validators/memberValidator");
 const { authenticateToken } = require("../jwtAuthenticator");
 
 memberRouter
   .route("/register")
-  .post(
-    body("username", "password")
-      .isString()
-      .withMessage("username or password should be a string")
-      .notEmpty()
-      .withMessage("fields are empty!"),
-    validateError,
-    setMember
-  );
+  .post(usernameChecker, passwordChecker, validateError, setMember);
+
 memberRouter.route("/").get(
   /*
     param("id")
@@ -31,16 +29,19 @@ memberRouter.route("/").get(
   authenticateToken,
   getMember
 );
+
 memberRouter
   .route("/login")
-  .post(
-    body("username", "password")
-      .isString()
-      .withMessage("username or password should be a string")
-      .notEmpty()
-      .withMessage("fields are empty!"),
+  .post(usernameChecker, passwordChecker, validateError, login);
+
+memberRouter
+  .route("/update")
+  .put(
+    usernameChecker.optional(),
+    passwordChecker.optional(),
     validateError,
-    login
+    authenticateToken,
+    updateMember
   );
 
 module.exports = memberRouter;

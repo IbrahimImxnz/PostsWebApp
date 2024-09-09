@@ -71,4 +71,27 @@ const login = asyncHandler(async (req, res) => {
   }
 });
 
-module.exports = { getMember, setMember, login };
+const updateMember = asyncHandler(async (req, res) => {
+  const { username, password } = req.body;
+  const salt = 5;
+  const hashedPassword = await bcrypt.hash(password, salt);
+
+  const member = await Member.findById(req.userid);
+  if (!member)
+    return res
+      .status(404)
+      .json({ success: false, message: "member not found" });
+  // could use findByIdAndUpdate
+  if (username) member.username = username;
+  if (password) member.password = hashedPassword;
+
+  await member.save();
+
+  res.json({
+    success: true,
+    data: member,
+    message: "Member updated successfully",
+  });
+});
+
+module.exports = { getMember, setMember, login, updateMember };

@@ -47,13 +47,15 @@ postRouter
   .route("/section/:section")
   .get(validateError, authenticateToken, getPostBySection);
 
-postRouter.route("/update/:id").put(
-  checkTitle, //.optional({ values: "falsy" }),
-  checkText, //.optional({ values: "falsy" }),
-  checkSectionId, //.optional({ values: "falsy" }),
-  validateError,
-  authenticateToken,
-  updatePost
-);
+postRouter
+  .route("/update/:id")
+  .put(
+    checkTitle.optional(),
+    checkText.optional(),
+    checkSectionId.optional(),
+    validateError,
+    authenticateToken,
+    updatePost
+  );
 
 module.exports = postRouter;
