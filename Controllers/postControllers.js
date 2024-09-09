@@ -19,6 +19,37 @@ const getPost = asyncHandler(async (req, res) => {
 });
 // todo add getspecificpost
 // todo getpostbysection
+// todo add put and logout functions and delete
+const getPostByTitle = asyncHandler(async (req, res) => {
+  const post = await Post.findOne({
+    member_id: req.userid,
+    title: req.params.title,
+  })
+    .populate("member_id")
+    .populate("section_id");
+  if (!post)
+    return res.status(404).json({ success: false, message: "Post not found" });
+  res.json({ post });
+  if (!req.params.title)
+    return res.status(404).json({ success: false, message: "Title not found" });
+});
+
+const getPostBySection = asyncHandler(async (req, res) => {
+  const post = await Post.find({
+    member_id: req.userid,
+    section_id: req.params.section,
+  }).populate("member_id");
+
+  if (!post)
+    return res
+      .status(404)
+      .json({ success: false, message: "Post Section not found" });
+  res.json({ post });
+  if (!req.params.section)
+    return res
+      .status(404)
+      .json({ success: false, message: "Section not found" });
+});
 
 const setPost = asyncHandler(async (req, res) => {
   const { title, text, section_id } = req.body;
@@ -35,4 +66,4 @@ const setPost = asyncHandler(async (req, res) => {
   res.status(201).json(post); // todo change 200 to 201
 });
 
-module.exports = { getPost, setPost };
+module.exports = { getPost, setPost, getPostByTitle, getPostBySection };

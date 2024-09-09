@@ -1,7 +1,12 @@
 const express = require("express");
 const postRouter = express.Router();
 const { param, body } = require("express-validator");
-const { getPost, setPost } = require("../Controllers/postControllers");
+const {
+  getPost,
+  setPost,
+  getPostByTitle,
+  getPostBySection,
+} = require("../Controllers/postControllers");
 const validateError = require("../validator");
 const { authenticateToken } = require("../jwtAuthenticator");
 
@@ -22,6 +27,7 @@ postRouter
     authenticateToken,
     setPost
   );
+
 postRouter.route("/").get(
   /*
     param("id")
@@ -33,5 +39,13 @@ postRouter.route("/").get(
   authenticateToken,
   getPost
 );
+
+postRouter
+  .route("/title/:title")
+  .get(validateError, authenticateToken, getPostByTitle);
+
+postRouter
+  .route("/section/:section")
+  .get(validateError, authenticateToken, getPostBySection);
 
 module.exports = postRouter;
