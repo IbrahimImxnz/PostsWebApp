@@ -6,6 +6,7 @@ const {
   getPostByTitle,
   getPostBySection,
   updatePost,
+  deletePost,
 } = require("../Controllers/postControllers");
 const validateError = require("../Validators/validator");
 const {
@@ -57,5 +58,9 @@ postRouter
     authenticateToken,
     updatePost
   );
+
+postRouter
+  .route("/delete/:id")
+  .delete(validateError, authenticateToken, deletePost);
 
 module.exports = postRouter;
