@@ -31,4 +31,21 @@ const setSection = asyncHandler(async (req, res) => {
   res.status(200).json(section);
 });
 
-module.exports = { getSection, setSection };
+const updateSection = asyncHandler(async (req, res) => {
+  const section = await Section.findById(req.params.id);
+  if (!section)
+    return res
+      .status(404)
+      .json({ success: false, message: "could not find section" });
+  if (req.body.name) section.name = req.body.name;
+
+  await section.save();
+
+  res.json({
+    success: true,
+    data: section,
+    message: "section updated successfully",
+  });
+});
+
+module.exports = { getSection, setSection, updateSection };

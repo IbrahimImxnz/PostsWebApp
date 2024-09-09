@@ -1,22 +1,18 @@
 const express = require("express");
 const sectionRouter = express.Router();
 const { param, body } = require("express-validator");
-const { getSection, setSection } = require("../Controllers/sectionControllers");
+const {
+  getSection,
+  setSection,
+  updateSection,
+} = require("../Controllers/sectionControllers");
 const validateError = require("../Validators/validator");
 const { authenticateToken } = require("../jwtAuthenticator");
+const { nameChecker } = require("../Validators/sectionValidator");
 
 sectionRouter
   .route("/")
-  .post(
-    body("name")
-      .isString()
-      .withMessage("name should be a string")
-      .notEmpty()
-      .withMessage("fields are empty!"),
-    validateError,
-    authenticateToken,
-    setSection
-  );
+  .post(nameChecker, validateError, authenticateToken, setSection);
 sectionRouter.route("/").get(
   /*
     param("id")
@@ -28,5 +24,8 @@ sectionRouter.route("/").get(
   authenticateToken,
   getSection
 );
+sectionRouter
+  .route("/update")
+  .put(nameChecker, validateError, authenticateToken, updateSection);
 
 module.exports = sectionRouter;
