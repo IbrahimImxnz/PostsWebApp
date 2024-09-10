@@ -5,6 +5,7 @@ const {
   getSection,
   setSection,
   updateSection,
+  getAllSections,
 } = require("../Controllers/sectionControllers");
 const validateError = require("../Validators/validator");
 const { authenticateToken } = require("../jwtAuthenticator");
@@ -13,6 +14,7 @@ const { nameChecker } = require("../Validators/sectionValidator");
 sectionRouter
   .route("/")
   .post(nameChecker, validateError, authenticateToken, setSection);
+
 sectionRouter.route("/").get(
   /*
     param("id")
@@ -24,8 +26,11 @@ sectionRouter.route("/").get(
   authenticateToken,
   getSection
 );
+
 sectionRouter
   .route("/update")
   .put(nameChecker, validateError, authenticateToken, updateSection);
+
+sectionRouter.route("/AllSections").get(getSection);
 
 module.exports = sectionRouter;

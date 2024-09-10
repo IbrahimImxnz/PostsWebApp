@@ -8,15 +8,29 @@ const getSection = asyncHandler(async (req, res) => {
         return res.status(400).json({success : false, message : result.array()})
     }*/
   //const section = await Section.findById(req.params.id);
-  const section = await Section.find({ member_id: req.userid }).populate(
-    "member_id"
-  );
+  const section = await Section.find({ created_by: req.userid }).populate({
+    path: "created_by",
+    select: "username",
+  });
 
   if (!section)
     return res
       .status(404)
       .json({ success: false, message: "Section not found" });
-  res.send(section);
+  res.json({ success: true, data: section, message: "sections found" });
+});
+
+const getAllSections = asyncHandler(async (req, res) => {
+  const sections = Section.find({}).populate({
+    path: "created_by",
+    select: "username",
+  });
+  if (sections.isEmpty())
+    return res
+      .status(404)
+      .json({ success: false, message: "No sections created yet" });
+
+  res.json({ success: true, data: sections, message: "All sections found" });
 });
 
 const setSection = asyncHandler(async (req, res) => {
@@ -48,4 +62,4 @@ const updateSection = asyncHandler(async (req, res) => {
   });
 });
 
-module.exports = { getSection, setSection, updateSection };
+module.exports = { getSection, setSection, updateSection, getAllSections };
