@@ -26,7 +26,7 @@ const setSection = asyncHandler(async (req, res) => {
     }*/
   const section = await Section.create({
     name: req.body.name,
-    member_id: req.userid,
+    created_by: req.userid,
   });
   res.status(200).json(section);
 });

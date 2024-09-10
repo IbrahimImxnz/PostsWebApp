@@ -1,5 +1,7 @@
 const asyncHandler = require("express-async-handler");
 const Member = require("../models/members");
+const Post = require("../models/posts");
+const Section = require("../models/sections");
 const { generateAccessToken } = require("../jwtAuthenticator");
 // const { validationResult } = require("express-validator");
 const bcrypt = require("bcrypt");
@@ -94,4 +96,28 @@ const updateMember = asyncHandler(async (req, res) => {
   });
 });
 
-module.exports = { getMember, setMember, login, updateMember };
+const deleteMember = asyncHandler(async (req, res) => {
+  const member = await Member.findByIdAndDelete(req.userid);
+
+  if (!member)
+    return res
+      .status(404)
+      .json({ success: false, message: "Member not found" });
+
+  const posts = await Post.deleteMany({ member_id: req.userid });
+  // const sections = await Section.deleteMany({ member_id: req.userid });
+
+  res.json({
+    success: true,
+    /*data: member,
+    data: posts,
+    data: sections,*/
+    message: "Member deleted successfully",
+  });
+});
+
+module.exports = { getMember, setMember, login, updateMember, deleteMember };
+
+// ? how to delete all posts of a member after deleting that member
+// todo add logout
+// ? ask about .optional() -> when putting and posting

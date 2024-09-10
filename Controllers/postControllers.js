@@ -38,7 +38,9 @@ const getPostBySection = asyncHandler(async (req, res) => {
   const post = await Post.find({
     member_id: req.userid,
     section_id: req.params.section,
-  }).populate("member_id");
+  })
+    .populate("member_id")
+    .populate("section_id");
 
   if (!post)
     return res

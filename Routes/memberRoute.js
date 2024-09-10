@@ -6,6 +6,7 @@ const {
   setMember,
   login,
   updateMember,
+  deleteMember,
 } = require("../Controllers/memberControllers");
 const validateError = require("../Validators/validator");
 const {
@@ -43,5 +44,9 @@ memberRouter
     authenticateToken,
     updateMember
   );
+
+memberRouter
+  .route("/delete")
+  .delete(validateError, authenticateToken, deleteMember);
 
 module.exports = memberRouter;

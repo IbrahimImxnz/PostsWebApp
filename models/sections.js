@@ -13,7 +13,7 @@ const sectionSchema = mongoose.Schema({
     },*/
     unique: true,
   },
-  member_id: {
+  created_by: {
     type: mongoose.Types.ObjectId,
     required: true,
     ref: Member, // todo change to string (collection name)
