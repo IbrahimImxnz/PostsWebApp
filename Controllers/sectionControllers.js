@@ -63,3 +63,5 @@ const updateSection = asyncHandler(async (req, res) => {
 });
 
 module.exports = { getSection, setSection, updateSection, getAllSections };
+
+// todo use query parameters for get all to avoid having too many get requests

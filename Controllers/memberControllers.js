@@ -5,6 +5,7 @@ const Section = require("../models/sections");
 const { generateAccessToken } = require("../jwtAuthenticator");
 // const { validationResult } = require("express-validator");
 const bcrypt = require("bcrypt");
+const { blacklistToken } = require("../redisBlacklist");
 
 const getMember = asyncHandler(async (req, res) => {
   /*const result = validationResult(req);
@@ -16,7 +17,7 @@ const getMember = asyncHandler(async (req, res) => {
     return res
       .status(404)
       .json({ success: false, message: "Could not find user" });
-  res.json({ member });
+  res.json({ success: true, data: member, message: "Member found" });
 });
 
 const setMember = asyncHandler(async (req, res) => {
@@ -116,7 +117,31 @@ const deleteMember = asyncHandler(async (req, res) => {
   });
 });
 
-module.exports = { getMember, setMember, login, updateMember, deleteMember };
+const logout = asyncHandler(async (req, res) => {
+  const authHeader = req.headers["authorization"];
+  const token = authHeader && authHeader.split(" ")[1];
+
+  if (token == null) return res.sendStatus(401);
+
+  const member = Member.findById(req.userid);
+
+  if (!member)
+    return res
+      .status(404)
+      .json({ success: false, message: "Member could not be found" });
+
+  blacklistToken(token);
+  res.json({ success: true, message: "Member logged out successfully" });
+});
+
+module.exports = {
+  getMember,
+  setMember,
+  login,
+  updateMember,
+  deleteMember,
+  logout,
+};
 
 // ? how to delete all posts of a member after deleting that member
 // todo add logout

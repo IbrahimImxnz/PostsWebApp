@@ -7,6 +7,7 @@ const {
   login,
   updateMember,
   deleteMember,
+  logout,
 } = require("../Controllers/memberControllers");
 const validateError = require("../Validators/validator");
 const {
@@ -14,6 +15,7 @@ const {
   passwordChecker,
 } = require("../Validators/memberValidator");
 const { authenticateToken } = require("../jwtAuthenticator");
+const { checkToken } = require("../redisBlacklist");
 
 memberRouter
   .route("/register")
@@ -28,6 +30,7 @@ memberRouter.route("/").get(
       .withMessage("invalid Id format!"),*/
   validateError,
   authenticateToken,
+  checkToken,
   getMember
 );
 
@@ -48,5 +51,9 @@ memberRouter
 memberRouter
   .route("/delete")
   .delete(validateError, authenticateToken, deleteMember);
+
+memberRouter
+  .route("/logout")
+  .post(validateError, authenticateToken, checkToken, logout);
 
 module.exports = memberRouter;
