@@ -45,12 +45,13 @@ memberRouter
     passwordChecker.optional(),
     validateError,
     authenticateToken,
+    checkToken,
     updateMember
   );
 
 memberRouter
   .route("/delete")
-  .delete(validateError, authenticateToken, deleteMember);
+  .delete(validateError, authenticateToken, checkToken, deleteMember);
 
 memberRouter
   .route("/logout")

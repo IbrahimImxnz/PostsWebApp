@@ -10,10 +10,11 @@ const {
 const validateError = require("../Validators/validator");
 const { authenticateToken } = require("../jwtAuthenticator");
 const { nameChecker } = require("../Validators/sectionValidator");
+const { checkToken } = require("../redisBlacklist");
 
 sectionRouter
   .route("/")
-  .post(nameChecker, validateError, authenticateToken, setSection);
+  .post(nameChecker, validateError, authenticateToken, checkToken, setSection);
 
 sectionRouter.route("/").get(
   /*
@@ -24,12 +25,19 @@ sectionRouter.route("/").get(
       .withMessage("invalid Id format!"),*/
   validateError,
   authenticateToken,
+  checkToken,
   getSection
 );
 
 sectionRouter
   .route("/update")
-  .put(nameChecker, validateError, authenticateToken, updateSection);
+  .put(
+    nameChecker,
+    validateError,
+    authenticateToken,
+    checkToken,
+    updateSection
+  );
 
 sectionRouter.route("/AllSections").get(getSection);
 

@@ -16,6 +16,7 @@ const {
 } = require("../Validators/postValidator");
 
 const { authenticateToken } = require("../jwtAuthenticator");
+const { checkToken } = require("../redisBlacklist");
 
 postRouter
   .route("/")
@@ -25,6 +26,7 @@ postRouter
     checkSectionId,
     validateError,
     authenticateToken,
+    checkToken,
     setPost
   );
 
@@ -37,16 +39,17 @@ postRouter.route("/").get(
       .withMessage("invalid Id format!"),*/
   validateError,
   authenticateToken,
+  checkToken,
   getPost
 );
 
 postRouter
   .route("/title/:title")
-  .get(validateError, authenticateToken, getPostByTitle);
+  .get(validateError, authenticateToken, checkToken, getPostByTitle);
 
 postRouter
   .route("/section/:section")
-  .get(validateError, authenticateToken, getPostBySection);
+  .get(validateError, authenticateToken, checkToken, getPostBySection);
 
 postRouter
   .route("/update/:id")
@@ -56,11 +59,12 @@ postRouter
     checkSectionId.optional(),
     validateError,
     authenticateToken,
+    checkToken,
     updatePost
   );
 
 postRouter
   .route("/delete/:id")
-  .delete(validateError, authenticateToken, deletePost);
+  .delete(validateError, authenticateToken, checkToken, deletePost);
 
 module.exports = postRouter;
