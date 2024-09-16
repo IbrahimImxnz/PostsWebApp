@@ -77,7 +77,6 @@ const login = asyncHandler(async (req, res) => {
 const updateMember = asyncHandler(async (req, res) => {
   const { username, password } = req.body;
   const salt = 5;
-  const hashedPassword = await bcrypt.hash(password, salt);
 
   const member = await Member.findById(req.userid);
   if (!member)
@@ -86,7 +85,10 @@ const updateMember = asyncHandler(async (req, res) => {
       .json({ success: false, message: "member not found" });
   // could use findByIdAndUpdate
   if (username) member.username = username;
-  if (password) member.password = hashedPassword;
+  if (password) {
+    const hashedPassword = await bcrypt.hash(password, salt);
+    member.password = hashedPassword;
+  }
 
   await member.save();
 

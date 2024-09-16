@@ -50,7 +50,7 @@ const checkToken = asyncHandler(async (req, res, next) => {
   if (result)
     return res
       .status(401)
-      .json({ success: true, message: "Token is blacklisted" });
+      .json({ success: false, message: "Token is blacklisted" });
   next();
 });
 
