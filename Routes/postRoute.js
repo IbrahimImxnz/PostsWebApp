@@ -3,8 +3,8 @@ const postRouter = express.Router();
 const {
   getPost,
   setPost,
-  getPostByTitle,
-  getPostBySection,
+  //getPostByTitle,
+  //getPostBySection,
   updatePost,
   deletePost,
 } = require("../Controllers/postControllers");
@@ -13,6 +13,9 @@ const {
   checkSectionId,
   checkText,
   checkTitle,
+  checkSectionIdQuery,
+  checkTitleQuery,
+  checkIdQuery,
 } = require("../Validators/postValidator");
 
 const { authenticateToken } = require("../jwtAuthenticator");
@@ -37,12 +40,15 @@ postRouter.route("/").get(
       .withMessage("id is empty!")
       .isMongoId()
       .withMessage("invalid Id format!"),*/
+  checkSectionIdQuery.optional(),
+  checkTitleQuery.optional(),
+  checkIdQuery.optional(),
   validateError,
   authenticateToken,
   checkToken,
   getPost
 );
-
+/*
 postRouter
   .route("/title/:title")
   .get(validateError, authenticateToken, checkToken, getPostByTitle);
@@ -50,7 +56,7 @@ postRouter
 postRouter
   .route("/section/:section")
   .get(validateError, authenticateToken, checkToken, getPostBySection);
-
+*/
 postRouter
   .route("/update/:id")
   .put(

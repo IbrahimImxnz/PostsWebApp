@@ -58,7 +58,7 @@ const checkToken = asyncHandler(async (req, res, next) => {
   redisClient.set(token, "blacklisted", "EX", 1800);
 }*/
 const blacklistToken = asyncHandler(async (token) => {
-  await redisClient.set(token, "blacklsited", "EX", 1800);
+  await redisClient.set(token, "blacklisted", "EX", 1800);
 });
 
 module.exports = { checkToken, blacklistToken };

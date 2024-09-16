@@ -1,16 +1,16 @@
 const asyncHandler = require("express-async-handler");
 const Post = require("../models/posts");
 const { validationResult } = require("express-validator");
-
+/*
 const getPost = asyncHandler(async (req, res) => {
   /*const result = validationResult(req)
     if (!result.isEmpty()){
         return res.status(400).json({success : false, message : result.array()})
     }*/
-  /*const post = await Post.findById(req.params.id)
+/*const post = await Post.findById(req.params.id)
     .populate("member_id")
     .populate("section_id");*/
-  const post = await Post.find({ member_id: req.userid })
+/*const post = await Post.find({ member_id: req.userid })
     .populate("member_id")
     .populate("section_id");
   if (!post)
@@ -51,6 +51,30 @@ const getPostBySection = asyncHandler(async (req, res) => {
     return res
       .status(404)
       .json({ success: false, message: "Section not found" });
+});*/
+
+// todo a better way is to use query params
+
+const getPost = asyncHandler(async (req, res) => {
+  const { section_id, title, id } = req.query;
+  let query = { member_id: req.userid };
+
+  if (section_id) query.section_id = section_id;
+
+  if (title) query.title = title;
+
+  if (id) query.id = id;
+
+  const post = await Post.find(query)
+    .populate({ path: "member_id", select: "username" })
+    .populate("section_id");
+
+  if (!post || post.length == 0)
+    return res
+      .status(404)
+      .json({ success: false, message: "Could not fetch post" });
+
+  res.json({ success: true, data: post, message: "Post fetched" });
 });
 
 const setPost = asyncHandler(async (req, res) => {
@@ -96,8 +120,8 @@ const deletePost = asyncHandler(async (req, res) => {
 module.exports = {
   getPost,
   setPost,
-  getPostByTitle,
-  getPostBySection,
+  //getPostByTitle,
+  //getPostBySection,
   updatePost,
   deletePost,
 };

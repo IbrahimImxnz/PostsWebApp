@@ -1,4 +1,4 @@
-const { body } = require("express-validator");
+const { body, query } = require("express-validator");
 
 const checkTitle = body("title")
   .isString()
@@ -18,4 +18,27 @@ const checkSectionId = body("section_id")
   .isMongoId()
   .withMessage("Id format is incorrect!");
 
-module.exports = { checkText, checkTitle, checkSectionId };
+const checkTitleQuery = query("title")
+  .notEmpty()
+  .withMessage("title field is empty!");
+
+const checkSectionIdQuery = query("section_id")
+  .notEmpty()
+  .withMessage("Id is empty!")
+  .isMongoId()
+  .withMessage("Id format is incorrect!");
+
+const checkIdQuery = query("id")
+  .notEmpty()
+  .withMessage("Id is empty!")
+  .isMongoId()
+  .withMessage("Id format is incorrect!");
+
+module.exports = {
+  checkText,
+  checkTitle,
+  checkSectionId,
+  checkSectionIdQuery,
+  checkTitleQuery,
+  checkIdQuery,
+};
