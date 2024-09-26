@@ -119,7 +119,7 @@ const login = asyncHandler(async (req, res) => {
 });
 
 const updateMember = asyncHandler(async (req, res) => {
-  const { username, password, email } = req.body;
+  const { username, password } = req.body;
   const salt = 5;
 
   const member = await Member.findById(req.userid);
@@ -133,7 +133,7 @@ const updateMember = asyncHandler(async (req, res) => {
     const hashedPassword = await bcrypt.hash(password, salt);
     member.password = hashedPassword;
   }
-  if (email) member.email = email;
+  // if (email) member.email = email;
 
   await member.save();
 
@@ -224,6 +224,58 @@ const resetPassword = asyncHandler(async (req, res) => {
   res.json({ success: true, message: "Password reset successfully" });
 });
 
+const updateEmailVerify = asyncHandler(async (req, res) => {
+  // const { email } = req.body;
+
+  const member = await Member.findById(req.userid);
+
+  if (!member)
+    return res
+      .status(404)
+      .json({ success: false, messagee: "Member not found" });
+
+  const randomCode = Math.floor(10000000 + Math.random() * 90000000); // 8 digit code
+
+  member.code = randomCode;
+  member.codeExpires = Date.now() + 1800000;
+
+  await member.save();
+
+  sendMail(member.email, randomCode);
+  res.json({ success: true, message: "Email sent successfully" });
+});
+
+const updateEmail = asyncHandler(async (req, res) => {
+  const { email, code } = req.body;
+
+  const member2 = await Member.findOne({ email: email });
+  if (member2)
+    return res
+      .status(400)
+      .json({ success: false, message: "Email already in use" });
+
+  const member = await Member.findById(req.userid);
+
+  if (!member)
+    return res
+      .status(404)
+      .json({ success: false, messagee: "Member not found" });
+
+  if (code != member.code || member.codeExpires < Date.now())
+    return res
+      .status(400)
+      .json({ success: false, message: "Code expired or invalid" });
+
+  if (email) member.email = email;
+
+  await member.save();
+  res.json({
+    success: true,
+    data: member,
+    message: "email updated successfully",
+  });
+});
+
 module.exports = {
   getMember,
   setMember,
@@ -234,6 +286,8 @@ module.exports = {
   forgotPassword,
   resetPassword,
   verifyEmail,
+  updateEmailVerify,
+  updateEmail,
 };
 
 // ? how to delete all posts of a member after deleting that member

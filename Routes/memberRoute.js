@@ -11,6 +11,8 @@ const {
   forgotPassword,
   resetPassword,
   verifyEmail,
+  updateEmail,
+  updateEmailVerify,
 } = require("../Controllers/memberControllers");
 const validateError = require("../Validators/validator");
 const {
@@ -59,7 +61,6 @@ memberRouter
   .put(
     usernameRegistrationChecker.optional(),
     passwordChecker.optional(),
-    emailChecker.optional(),
     validateError,
     authenticateToken,
     checkToken,
@@ -86,6 +87,20 @@ memberRouter
     codeChecker,
     validateError,
     resetPassword
+  );
+
+memberRouter
+  .route("/verifyEmailForUpdate")
+  .post(authenticateToken, checkToken, updateEmailVerify);
+
+memberRouter
+  .route("/updateEmail")
+  .put(
+    emailChecker.optional(),
+    validateError,
+    authenticateToken,
+    checkToken,
+    updateEmail
   );
 
 module.exports = memberRouter;
