@@ -18,6 +18,7 @@ const {
   passwordChecker,
   emailChecker,
   codeChecker,
+  usernameRegistrationChecker,
 } = require("../Validators/memberValidator");
 const { authenticateToken } = require("../jwtAuthenticator");
 const { checkToken } = require("../redisBlacklist");
@@ -29,7 +30,7 @@ memberRouter
 memberRouter
   .route("/register")
   .post(
-    usernameChecker,
+    usernameRegistrationChecker,
     passwordChecker,
     emailChecker,
     validateError,
@@ -56,8 +57,9 @@ memberRouter
 memberRouter
   .route("/update")
   .put(
-    usernameChecker.optional(),
+    usernameRegistrationChecker.optional(),
     passwordChecker.optional(),
+    emailChecker.optional(),
     validateError,
     authenticateToken,
     checkToken,
