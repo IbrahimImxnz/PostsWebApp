@@ -2,8 +2,8 @@ const nodemailer = require("nodemailer");
 require("dotenv").config();
 const asyncHandler = require("express-async-handler");
 
-const sendMail = asyncHandler(async (userEmail) => {
-  const randomCode = Math.floor(10000000 + Math.random() * 90000000); // 8 digit code
+const sendMail = asyncHandler(async (userEmail, randomCode) => {
+  // const randomCode = Math.floor(10000000 + Math.random() * 90000000); // 8 digit code
 
   const html = `
     <h1>Your code</h1>

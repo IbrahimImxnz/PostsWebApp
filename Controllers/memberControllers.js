@@ -6,6 +6,7 @@ const { generateAccessToken } = require("../jwtAuthenticator");
 // const { validationResult } = require("express-validator");
 const bcrypt = require("bcrypt");
 const { blacklistToken } = require("../redisBlacklist");
+const sendMail = require("../sendEmail");
 
 const getMember = asyncHandler(async (req, res) => {
   /*const result = validationResult(req);
@@ -22,7 +23,7 @@ const getMember = asyncHandler(async (req, res) => {
 
 const setMember = asyncHandler(async (req, res) => {
   const salt = 5;
-  const { username, password } = req.body;
+  const { username, password, email } = req.body;
   // todo move to middleware
   /*const result = validationResult(req);
   if (!result.isEmpty()) {
@@ -33,6 +34,7 @@ const setMember = asyncHandler(async (req, res) => {
   const member = await Member.create({
     username: username,
     password: hashedPassword,
+    email: email,
   });
 
   // todo encrypt password
@@ -75,7 +77,7 @@ const login = asyncHandler(async (req, res) => {
 });
 
 const updateMember = asyncHandler(async (req, res) => {
-  const { username, password } = req.body;
+  const { username, password, email } = req.body;
   const salt = 5;
 
   const member = await Member.findById(req.userid);
@@ -89,6 +91,7 @@ const updateMember = asyncHandler(async (req, res) => {
     const hashedPassword = await bcrypt.hash(password, salt);
     member.password = hashedPassword;
   }
+  if (email) member.email = email;
 
   await member.save();
 
@@ -125,7 +128,7 @@ const logout = asyncHandler(async (req, res) => {
 
   if (token == null) return res.sendStatus(401);
 
-  const member = Member.findById(req.userid);
+  const member = await Member.findById(req.userid);
 
   if (!member)
     return res
@@ -136,6 +139,49 @@ const logout = asyncHandler(async (req, res) => {
   res.json({ success: true, message: "Member logged out successfully" });
 });
 
+const forgotPassword = asyncHandler(async (req, res) => {
+  const { email } = req.body;
+
+  const randomCode = Math.floor(10000000 + Math.random() * 90000000); // 8 digit code
+
+  const member = await Member.findOne({ email: email });
+
+  if (!member)
+    return res
+      .status(404)
+      .json({ success: false, message: "Member email not found" });
+
+  member.code = randomCode;
+  member.codeExpires = Date.now() + 1800000;
+  await member.save();
+
+  sendMail(email, randomCode);
+  res.json({ success: true, message: "Email has been sent with reset code" });
+});
+
+const resetPassword = asyncHandler(async (req, res) => {
+  const { username, password, code } = req.body;
+  const salt = 5;
+
+  const member = await Member.findOne({ username: username });
+  if (!member)
+    return res
+      .status(404)
+      .json({ success: false, message: "Member not found" });
+
+  if (code != member.code || member.codeExpires < Date.now())
+    return res
+      .status(400)
+      .json({ success: false, message: "Code expired or invalid" });
+
+  const hashedPassword = await bcrypt.hash(password, salt);
+  member.password = hashedPassword;
+
+  await member.save();
+
+  res.json({ success: true, message: "Password reset successfully" });
+});
+
 module.exports = {
   getMember,
   setMember,
@@ -143,6 +189,8 @@ module.exports = {
   updateMember,
   deleteMember,
   logout,
+  forgotPassword,
+  resetPassword,
 };
 
 // ? how to delete all posts of a member after deleting that member

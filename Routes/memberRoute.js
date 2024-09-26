@@ -8,18 +8,28 @@ const {
   updateMember,
   deleteMember,
   logout,
+  forgotPassword,
+  resetPassword,
 } = require("../Controllers/memberControllers");
 const validateError = require("../Validators/validator");
 const {
   usernameChecker,
   passwordChecker,
+  emailChecker,
+  codeChecker,
 } = require("../Validators/memberValidator");
 const { authenticateToken } = require("../jwtAuthenticator");
 const { checkToken } = require("../redisBlacklist");
 
 memberRouter
   .route("/register")
-  .post(usernameChecker, passwordChecker, validateError, setMember);
+  .post(
+    usernameChecker,
+    passwordChecker,
+    emailChecker,
+    validateError,
+    setMember
+  );
 
 memberRouter.route("/").get(
   /*
@@ -56,5 +66,19 @@ memberRouter
 memberRouter
   .route("/logout")
   .post(validateError, authenticateToken, checkToken, logout);
+
+memberRouter
+  .route("/forgotPassword")
+  .post(emailChecker, validateError, forgotPassword);
+
+memberRouter
+  .route("/resetPassword")
+  .post(
+    usernameChecker,
+    passwordChecker,
+    codeChecker,
+    validateError,
+    resetPassword
+  );
 
 module.exports = memberRouter;

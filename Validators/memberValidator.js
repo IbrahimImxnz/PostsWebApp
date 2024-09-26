@@ -12,4 +12,23 @@ const passwordChecker = body("password")
   .notEmpty()
   .withMessage("password field is empty!");
 
-module.exports = { usernameChecker, passwordChecker };
+const emailChecker = body("email")
+  .isString()
+  .withMessage("Email should be a string!")
+  .notEmpty()
+  .withMessage("Email field is empty!")
+  .isEmail()
+  .withMessage("Email incorrect form");
+
+const codeChecker = body("code")
+  .isNumeric()
+  .withMessage("code should be a number!")
+  .notEmpty()
+  .withMessage("Code field is emtpy!");
+
+module.exports = {
+  usernameChecker,
+  passwordChecker,
+  emailChecker,
+  codeChecker,
+};

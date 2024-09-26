@@ -12,6 +12,20 @@ const memberSchema = mongoose.Schema(
       required: true,
       // todo encrypt password with bcrypt
     },
+    email: {
+      type: String,
+      required: true,
+      unique: true,
+      lowercase: true,
+      trim: true,
+      match: [/\S+@\S+\.\S+/, "Please enter a valid email address"],
+    },
+    code: {
+      type: Number,
+    },
+    codeExpires: {
+      type: Date,
+    },
   },
   { timestamps: true }
 );
