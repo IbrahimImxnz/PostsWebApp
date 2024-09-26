@@ -21,22 +21,64 @@ const getMember = asyncHandler(async (req, res) => {
   res.json({ success: true, data: member, message: "Member found" });
 });
 
+const verifyEmail = asyncHandler(async (req, res) => {
+  const { email } = req.body;
+
+  const member2 = await Member.findOne({ email: email });
+
+  if (member2)
+    return res
+      .status(400)
+      .json({ success: false, message: "Email already in use" });
+
+  const randomCode = Math.floor(10000000 + Math.random() * 90000000); // 8 digit code
+
+  /*const member = await Member.create({
+    code: randomCode,
+    codeExpires: Date.now() + 1800000,
+  });*/
+
+  await Member.updateOne(
+    // bypasses requirement validation of username and password
+    { email },
+    {
+      code: randomCode,
+      codeExpires: Date.now() + 1800000, // Code valid for 30 minutes
+    },
+    { upsert: true } // Create new document if not found
+  );
+
+  sendMail(email, randomCode);
+  res.json({ success: true, message: "Email sent successfully" });
+});
+
 const setMember = asyncHandler(async (req, res) => {
   const salt = 5;
-  const { username, password, email } = req.body;
+  const { username, password, email, code } = req.body;
   // todo move to middleware
   /*const result = validationResult(req);
   if (!result.isEmpty()) {
     return res.status(400).json({ success: false, message: result.array() });
   }*/
   const hashedPassword = await bcrypt.hash(password, salt);
-
+  /*
   const member = await Member.create({
     username: username,
     password: hashedPassword,
     email: email,
-  });
+  });*/
+  const member = await Member.findOne({ email: email });
 
+  if (!member)
+    return res.status(404).json({ success: false, message: "Email not found" });
+
+  if (code != member.code || member.codeExpires < Date.now())
+    return res
+      .status(400)
+      .json({ success: false, message: "Code expired or invalid" });
+
+  member.username = username;
+  member.password = hashedPassword;
   // todo encrypt password
   // todo return jwt token
   const accessToken = generateAccessToken({ id: member._id });
@@ -191,6 +233,7 @@ module.exports = {
   logout,
   forgotPassword,
   resetPassword,
+  verifyEmail,
 };
 
 // ? how to delete all posts of a member after deleting that member

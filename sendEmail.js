@@ -23,7 +23,7 @@ const sendMail = asyncHandler(async (userEmail, randomCode) => {
   const info = await transporter.sendMail({
     from: `Ibrahim <${process.env.EMAIL}>`,
     to: userEmail, // const emails = [...] for multiple recipients
-    subject: "Your code to reset password",
+    subject: "Your PostsWebApp code",
     html: html,
     attachments: [
       { filename: "unlock.jpg", path: "./unlock.jpg", cid: "uniqueimage" },

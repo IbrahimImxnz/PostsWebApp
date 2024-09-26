@@ -10,6 +10,7 @@ const {
   logout,
   forgotPassword,
   resetPassword,
+  verifyEmail,
 } = require("../Controllers/memberControllers");
 const validateError = require("../Validators/validator");
 const {
@@ -20,6 +21,10 @@ const {
 } = require("../Validators/memberValidator");
 const { authenticateToken } = require("../jwtAuthenticator");
 const { checkToken } = require("../redisBlacklist");
+
+memberRouter
+  .route("/verifyEmail")
+  .post(emailChecker, validateError, verifyEmail);
 
 memberRouter
   .route("/register")
