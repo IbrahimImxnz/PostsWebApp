@@ -1,6 +1,6 @@
 const express = require("express");
 const memberRouter = express.Router();
-const { param, body } = require("express-validator");
+const { param, body, checkExact } = require("express-validator");
 const {
   getMember,
   setMember,
@@ -24,6 +24,7 @@ const {
 } = require("../Validators/memberValidator");
 const { authenticateToken } = require("../jwtAuthenticator");
 const { checkToken } = require("../redisBlacklist");
+const sendMessage = require("../Controllers/messageControllers");
 
 memberRouter
   .route("/verifyEmail")
@@ -102,5 +103,9 @@ memberRouter
     checkToken,
     updateEmail
   );
+
+memberRouter
+  .route("/sendMessage")
+  .post(authenticateToken, checkToken, sendMessage);
 
 module.exports = memberRouter;
