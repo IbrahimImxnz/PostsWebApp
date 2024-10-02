@@ -16,6 +16,7 @@ const {
   followMember,
   unfollowMember,
   getFollowingFollowers,
+  getFavoritePosts,
 } = require("../Controllers/memberControllers");
 const validateError = require("../Validators/validator");
 const {
@@ -130,6 +131,10 @@ memberRouter
 memberRouter
   .route("/getFollowersFollowing")
   .get(authenticateToken, checkToken, getFollowingFollowers);
+
+memberRouter
+  .route("/getFavoritePosts")
+  .get(authenticateToken, checkToken, getFavoritePosts);
 
 /*memberRouter
   .route("/sendMessage")

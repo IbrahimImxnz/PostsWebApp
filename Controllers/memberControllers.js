@@ -372,6 +372,19 @@ const getFollowingFollowers = asyncHandler(async (req, res) => {
   });
 });
 
+const getFavoritePosts = asyncHandler(async (req, res) => {
+  const member = await Member.findById(req.userid, "favorites").populate(
+    "favorites"
+  );
+
+  if (!member)
+    return res
+      .status(404)
+      .json({ success: false, messagee: "Member not found" });
+
+  res.json({ success: true, data: member, message: "Your liked posts" });
+});
+
 module.exports = {
   getMember,
   setMember,
@@ -387,6 +400,7 @@ module.exports = {
   followMember,
   unfollowMember,
   getFollowingFollowers,
+  getFavoritePosts,
 };
 
 // ? how to delete all posts of a member after deleting that member

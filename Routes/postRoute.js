@@ -7,6 +7,7 @@ const {
   //getPostBySection,
   updatePost,
   deletePost,
+  favoritePost,
 } = require("../Controllers/postControllers");
 const validateError = require("../Validators/validator");
 const {
@@ -20,6 +21,7 @@ const {
 
 const { authenticateToken } = require("../jwtAuthenticator");
 const { checkToken } = require("../redisBlacklist");
+const { checkExact } = require("express-validator");
 
 postRouter
   .route("/")
@@ -72,5 +74,9 @@ postRouter
 postRouter
   .route("/delete/:id")
   .delete(validateError, authenticateToken, checkToken, deletePost);
+
+postRouter
+  .route("/favoritePost")
+  .post(checkTitle, validateError, authenticateToken, checkToken, favoritePost);
 
 module.exports = postRouter;

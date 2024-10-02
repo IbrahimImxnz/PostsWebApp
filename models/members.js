@@ -28,6 +28,7 @@ const memberSchema = mongoose.Schema(
     },
     following: [{ type: mongoose.Types.ObjectId, ref: "Member" }],
     followers: [{ type: mongoose.Types.ObjectId, ref: "Member" }],
+    favorites: [{ type: mongoose.Types.ObjectId, ref: "Post" }],
   },
   { timestamps: true }
 );

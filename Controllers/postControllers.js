@@ -1,6 +1,7 @@
 const asyncHandler = require("express-async-handler");
 const Post = require("../models/posts");
 const { validationResult } = require("express-validator");
+const Member = require("../models/members");
 /*
 const getPost = asyncHandler(async (req, res) => {
   /*const result = validationResult(req)
@@ -117,6 +118,27 @@ const deletePost = asyncHandler(async (req, res) => {
   res.json({ success: true, data: post, message: "post deleted" });
 });
 
+const favoritePost = asyncHandler(async (req, res) => {
+  const { title, member_id } = req.body;
+  const post = await Post.findOne({ title: title, member_id: member_id });
+
+  if (!post)
+    return res.status(404).json({ success: false, message: "Post not found" });
+
+  await Member.findByIdAndUpdate(req.userid, {
+    $push: { favorites: post._id },
+  });
+
+  const likedPost = await Post.findById(post._id)
+    .populate({
+      path: "member_id",
+      select: "username",
+    })
+    .populate({ path: "section_id", select: "name" });
+
+  res.json({ success: true, data: likedPost, message: "Post favorited" });
+});
+
 module.exports = {
   getPost,
   setPost,
@@ -124,4 +146,5 @@ module.exports = {
   //getPostBySection,
   updatePost,
   deletePost,
+  favoritePost,
 };
