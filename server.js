@@ -5,25 +5,14 @@ require("dotenv").config();
 const memberRouter = require("./Routes/memberRoute");
 const sectionRouter = require("./Routes/sectionRoute");
 const postRouter = require("./Routes/postRoute");
+/*
 const http = require("http");
-const { Server } = require("socket.io");
-
-const server = http.createServer(app);
-const io = new Server(server);
-
-io.on("connection", (socket) => {
-  //handle connection
-  console.log("Client connected: ", socket.id);
-  socket.on("message", (message) => {
-    console.log("Received message from " + socket.id + " " + message);
-    //handle message
-    socket.broadcast.emit("message", { user: socket.id, text: message }); // or io.emit
-  });
-  socket.on("disconnect", () => {
-    //handle disconnection
-    console.log("Client disconnected: ", socket.id);
-  });
-});
+const socketio = require("socket.io");
+const asyncHandler = require("express-async-handler");
+const jwt = require("jsonwebtoken");
+const Member = require("./models/members");
+const Messages = require("./models/messages");
+const mongoose = require("mongoose");*/
 
 connectDB();
 
@@ -36,4 +25,6 @@ app.use("/api/post", postRouter);
 
 const port = process.env.PORT || 7000;
 // app.listen(port, () => console.log(`listening to port ${port}`));
-server.listen(port, () => console.log(`listening to port ${port}`)); // gives server access to socket.io
+app.listen(port, () => console.log(`listening to port ${port}`)); // gives server access to socket.io
+
+// module.exports = { io, members };

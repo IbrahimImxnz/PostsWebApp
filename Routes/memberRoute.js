@@ -104,8 +104,8 @@ memberRouter
     updateEmail
   );
 
-memberRouter
+/*memberRouter
   .route("/sendMessage")
   .post(authenticateToken, checkToken, sendMessage);
-
+*/
 module.exports = memberRouter;

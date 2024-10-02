@@ -26,6 +26,8 @@ const memberSchema = mongoose.Schema(
     codeExpires: {
       type: Date,
     },
+    following: [mongoose.Types.ObjectId],
+    followers: [mongoose.Types.ObjectId],
   },
   { timestamps: true }
 );

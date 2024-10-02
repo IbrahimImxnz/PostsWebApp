@@ -276,6 +276,16 @@ const updateEmail = asyncHandler(async (req, res) => {
   });
 });
 
+const followMember = asyncHandler(async (req, res) => {
+  const { username } = req.body;
+
+  const member = await Member.find({ username: username });
+  if (!member)
+    return res
+      .status(404)
+      .json({ success: false, messagee: "Member not found" });
+});
+
 module.exports = {
   getMember,
   setMember,
