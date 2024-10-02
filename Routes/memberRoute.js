@@ -14,6 +14,8 @@ const {
   updateEmail,
   updateEmailVerify,
   followMember,
+  unfollowMember,
+  getFollowingFollowers,
 } = require("../Controllers/memberControllers");
 const validateError = require("../Validators/validator");
 const {
@@ -114,6 +116,20 @@ memberRouter
     checkToken,
     followMember
   );
+
+memberRouter
+  .route("/unfollowMember")
+  .post(
+    usernameChecker,
+    validateError,
+    authenticateToken,
+    checkToken,
+    unfollowMember
+  );
+
+memberRouter
+  .route("/getFollowersFollowing")
+  .get(authenticateToken, checkToken, getFollowingFollowers);
 
 /*memberRouter
   .route("/sendMessage")

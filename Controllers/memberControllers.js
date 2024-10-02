@@ -322,6 +322,56 @@ const followMember = asyncHandler(async (req, res) => {
   });
 });
 
+const unfollowMember = asyncHandler(async (req, res) => {
+  const you = await Member.findById(req.userid);
+  const member = await Member.findOne({ username: req.body.username });
+
+  if (!member)
+    return res
+      .status(404)
+      .json({ success: false, messagee: "Member not found" });
+  if (req.userid == member._id)
+    return res
+      .status(400)
+      .json({ success: false, message: "You cannot unfollow yourself!" });
+  if (!you.following.some((id) => id.equals(member._id)))
+    return res
+      .status(400)
+      .json({ success: false, message: "You do not follow this user!" });
+
+  await Member.findByIdAndUpdate(req.userid, {
+    $pull: { following: member._id },
+  });
+  await Member.findByIdAndUpdate(member._id, {
+    $pull: { followers: req.userid },
+  });
+
+  res.json({ success: true, message: "Member unfollowed successfully" });
+});
+
+const getFollowingFollowers = asyncHandler(async (req, res) => {
+  const member = await Member.findById(req.userid, "following followers")
+    .populate({
+      path: "following",
+      select: "username",
+    })
+    .populate({
+      path: "followers",
+      select: "username",
+    });
+
+  if (!member)
+    return res
+      .status(404)
+      .json({ success: false, messagee: "Member not found" });
+
+  res.json({
+    success: true,
+    data: member,
+    message: "Your followers and following",
+  });
+});
+
 module.exports = {
   getMember,
   setMember,
@@ -335,6 +385,8 @@ module.exports = {
   updateEmailVerify,
   updateEmail,
   followMember,
+  unfollowMember,
+  getFollowingFollowers,
 };
 
 // ? how to delete all posts of a member after deleting that member
