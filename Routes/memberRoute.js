@@ -13,6 +13,7 @@ const {
   verifyEmail,
   updateEmail,
   updateEmailVerify,
+  followMember,
 } = require("../Controllers/memberControllers");
 const validateError = require("../Validators/validator");
 const {
@@ -102,6 +103,16 @@ memberRouter
     authenticateToken,
     checkToken,
     updateEmail
+  );
+
+memberRouter
+  .route("/followMember")
+  .post(
+    usernameChecker,
+    validateError,
+    authenticateToken,
+    checkToken,
+    followMember
   );
 
 /*memberRouter

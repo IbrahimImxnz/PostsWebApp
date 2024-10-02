@@ -79,6 +79,8 @@ const setMember = asyncHandler(async (req, res) => {
 
   member.username = username;
   member.password = hashedPassword;
+
+  await member.save();
   // todo encrypt password
   // todo return jwt token
   const accessToken = generateAccessToken({ id: member._id });
@@ -279,11 +281,45 @@ const updateEmail = asyncHandler(async (req, res) => {
 const followMember = asyncHandler(async (req, res) => {
   const { username } = req.body;
 
-  const member = await Member.find({ username: username });
+  const member = await Member.findOne({ username: username });
+  const you = await Member.findById(req.userid);
+
   if (!member)
     return res
       .status(404)
       .json({ success: false, messagee: "Member not found" });
+  /* if (you.following.includes(member._id)) // this does not work when referencing another model
+    return res
+      .status(400)
+      .json({ success: false, message: "You already follow this user!" });
+  */
+  if (req.userid == member._id)
+    return res
+      .status(400)
+      .json({ success: false, message: "You cannot follow yourself!" });
+  if (you.following.some((id) => id.equals(member._id)))
+    // returns true or false wether array has that id or no
+    return res
+      .status(400)
+      .json({ success: false, message: "You already follow this user!" });
+
+  await Member.findByIdAndUpdate(req.userid, {
+    $push: { following: member._id },
+  });
+  await Member.findByIdAndUpdate(member._id, {
+    $push: { followers: req.userid },
+  });
+
+  const followedUser = await Member.findById(req.userid).populate({
+    path: "following",
+    select: "username",
+  });
+
+  res.json({
+    success: true,
+    data: followedUser,
+    message: `You are now following ${username}!`,
+  });
 });
 
 module.exports = {
@@ -298,6 +334,7 @@ module.exports = {
   verifyEmail,
   updateEmailVerify,
   updateEmail,
+  followMember,
 };
 
 // ? how to delete all posts of a member after deleting that member

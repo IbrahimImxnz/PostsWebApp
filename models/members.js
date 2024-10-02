@@ -26,8 +26,8 @@ const memberSchema = mongoose.Schema(
     codeExpires: {
       type: Date,
     },
-    following: [mongoose.Types.ObjectId],
-    followers: [mongoose.Types.ObjectId],
+    following: [{ type: mongoose.Types.ObjectId, ref: "Member" }],
+    followers: [{ type: mongoose.Types.ObjectId, ref: "Member" }],
   },
   { timestamps: true }
 );
