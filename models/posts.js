@@ -26,6 +26,7 @@ const postSchema = mongoose.Schema(
       required: true,
       ref: Section, // todo change to string (collection name)
     },
+    favorited: [{ type: mongoose.Types.ObjectId, ref: "Member" }],
   },
   { timestamps: true }
 );

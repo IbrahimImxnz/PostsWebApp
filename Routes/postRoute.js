@@ -17,6 +17,7 @@ const {
   checkSectionIdQuery,
   checkTitleQuery,
   checkIdQuery,
+  checkMemberId,
 } = require("../Validators/postValidator");
 
 const { authenticateToken } = require("../jwtAuthenticator");
@@ -45,9 +46,9 @@ postRouter.route("/").get(
   checkSectionIdQuery.optional(),
   checkTitleQuery.optional(),
   checkIdQuery.optional(),
-  validateError,
+  /* validateError,
   authenticateToken,
-  checkToken,
+  checkToken,*/ // i want anyone to be able to view posts
   getPost
 );
 /*
@@ -76,7 +77,14 @@ postRouter
   .delete(validateError, authenticateToken, checkToken, deletePost);
 
 postRouter
-  .route("/favoritePost")
-  .post(checkTitle, validateError, authenticateToken, checkToken, favoritePost);
+  .route("/favoritePost/:id")
+  .post(
+    checkTitle,
+    checkMemberId,
+    validateError,
+    authenticateToken,
+    checkToken,
+    favoritePost
+  );
 
 module.exports = postRouter;

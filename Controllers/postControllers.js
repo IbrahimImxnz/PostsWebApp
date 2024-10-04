@@ -119,8 +119,15 @@ const deletePost = asyncHandler(async (req, res) => {
 });
 
 const favoritePost = asyncHandler(async (req, res) => {
-  const { title, member_id } = req.body;
-  const post = await Post.findOne({ title: title, member_id: member_id });
+  // const title = req.body;
+  // const member_id = req.params;
+  const { title, member_id } = req.query;
+  let query = {};
+
+  query.title = title;
+  query.member_id = member_id;
+
+  const post = await Post.findOne(query);
 
   if (!post)
     return res.status(404).json({ success: false, message: "Post not found" });
@@ -135,6 +142,10 @@ const favoritePost = asyncHandler(async (req, res) => {
       select: "username",
     })
     .populate({ path: "section_id", select: "name" });
+
+  await Post.findByIdAndUpdate(post._id, {
+    $push: { favorited: req.params.id },
+  });
 
   res.json({ success: true, data: likedPost, message: "Post favorited" });
 });
