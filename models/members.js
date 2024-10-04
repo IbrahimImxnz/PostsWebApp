@@ -33,4 +33,13 @@ const memberSchema = mongoose.Schema(
   { timestamps: true }
 );
 
+memberSchema.pre("remove", async function (next) {
+  try {
+    await Post.deleteMany({ member_id: this._id });
+    next();
+  } catch (err) {
+    next(err);
+  }
+}); // middleware to delete any posts using this member id
+
 module.exports = mongoose.model("Member", memberSchema);

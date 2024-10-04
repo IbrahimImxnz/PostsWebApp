@@ -128,9 +128,15 @@ const favoritePost = asyncHandler(async (req, res) => {
   query.member_id = member_id;
 
   const post = await Post.findOne(query);
+  const you = await Member.findById(req.userid);
 
   if (!post)
     return res.status(404).json({ success: false, message: "Post not found" });
+  if (you.favorites.some((id) => id.equals(post._id)))
+    // returns true or false wether array has that id or no
+    return res
+      .status(400)
+      .json({ success: false, message: "You already favorite this post!" });
 
   await Member.findByIdAndUpdate(req.userid, {
     $push: { favorites: post._id },
@@ -150,6 +156,41 @@ const favoritePost = asyncHandler(async (req, res) => {
   res.json({ success: true, data: likedPost, message: "Post favorited" });
 });
 
+const unfavoritePost = asyncHandler(async (req, res) => {
+  const { title, member_id } = req.query;
+  let query = {};
+
+  query.title = title;
+  query.member_id = member_id;
+
+  const post = await Post.findOne(query);
+
+  if (!post)
+    return res.status(404).json({ success: false, message: "Post not found" });
+  if (!you.favorites.some((id) => id.equals(post._id)))
+    // returns true or false wether array has that id or no
+    return res
+      .status(400)
+      .json({ success: false, message: "You never favorited this post!" });
+
+  await Member.findByIdAndUpdate(req.userid, {
+    $pull: { favorites: post._id },
+  });
+
+  const unlikedPost = await Post.findById(post._id)
+    .populate({
+      path: "member_id",
+      select: "username",
+    })
+    .populate({ path: "section_id", select: "name" });
+
+  await Post.findByIdAndUpdate(post._id, {
+    $pull: { favorited: req.params.id },
+  });
+
+  res.json({ success: true, data: unlikedPost, message: "Post unfavorited" });
+});
+
 module.exports = {
   getPost,
   setPost,
@@ -158,4 +199,5 @@ module.exports = {
   updatePost,
   deletePost,
   favoritePost,
+  unfavoritePost,
 };

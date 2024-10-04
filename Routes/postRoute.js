@@ -8,6 +8,7 @@ const {
   updatePost,
   deletePost,
   favoritePost,
+  unfavoritePost,
 } = require("../Controllers/postControllers");
 const validateError = require("../Validators/validator");
 const {
@@ -85,6 +86,17 @@ postRouter
     authenticateToken,
     checkToken,
     favoritePost
+  );
+
+postRouter
+  .route("/unfavoritePost/:id")
+  .post(
+    checkTitle,
+    checkMemberId,
+    validateError,
+    authenticateToken,
+    checkToken,
+    unfavoritePost
   );
 
 module.exports = postRouter;
