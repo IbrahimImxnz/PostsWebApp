@@ -1,0 +1,68 @@
+<!DOCTYPE html>
+<html lang="en">
+  <head>
+    <meta charset="UTF-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1" />
+    <title>Logout</title>
+    <link rel="stylesheet" href="/css/style.css" />
+  </head>
+  <body>
+    <div class="form-container">
+      <h2>Logout</h2>
+      <form id="logoutForm" action="/api/member/logout" method="POST">
+        <button type="submit">Logout</button>
+      </form>
+      <p><a href="/api/member/login">Login</a> if you are not logged out.</p>
+    </div>
+
+    <!-- Messages -->
+    <div id="message"></div>
+
+    <script>
+      document
+        .getElementById("logoutForm")
+        .addEventListener("submit", async function (e) {
+          e.preventDefault();
+
+          const accessToken = localStorage.getItem("accessToken");
+
+          if (!accessToken) {
+            document.getElementById(
+              "message"
+            ).innerHTML = `<p class="error">You are not logged in.</p>`;
+            return;
+          }
+
+          try {
+            const response = await fetch("/api/member/logout", {
+              method: "POST",
+              headers: {
+                "Content-Type": "application/json",
+                Authorization: `Bearer ${accessToken}`,
+              },
+            });
+
+            const result = await response.json();
+            const messageDiv = document.getElementById("message");
+
+            if (result.success) {
+              messageDiv.innerHTML = `<p class="success">${result.message}</p>`;
+              // Remove the token from localStorage
+              localStorage.removeItem("accessToken");
+              // Redirect to login or homepage
+              setTimeout(() => {
+                window.location.href = "/api/member/login"; // Adjust as needed
+              }, 2000);
+            } else {
+              messageDiv.innerHTML = `<p class="error">${result.message}</p>`;
+            }
+          } catch (error) {
+            console.error("Error:", error);
+            document.getElementById(
+              "message"
+            ).innerHTML = `<p class="error">An unexpected error occurred.</p>`;
+          }
+        });
+    </script>
+  </body>
+</html>

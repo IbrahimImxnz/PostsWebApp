@@ -1,0 +1,201 @@
+<!DOCTYPE html>
+<html lang="en">
+  <head>
+    <meta charset="UTF-8" />
+    <title>Chat Room</title>
+    <link rel="stylesheet" href="/css/style.css" />
+    <style>
+      body {
+        font-family: Arial, sans-serif;
+        background-color: #f0f2f5;
+        display: flex;
+        justify-content: center;
+        align-items: center;
+        height: 100vh;
+      }
+
+      #chatContainer {
+        width: 500px;
+        background-color: #ffffff;
+        border-radius: 8px;
+        box-shadow: 0 4px 12px rgba(0, 0, 0, 0.1);
+        display: flex;
+        flex-direction: column;
+        overflow: hidden;
+      }
+
+      #chatHeader {
+        background-color: #007bff;
+        color: #ffffff;
+        padding: 15px;
+        text-align: center;
+      }
+
+      #chatWindow {
+        flex: 1;
+        padding: 15px;
+        overflow-y: auto;
+        background-color: #e5ddd5;
+      }
+
+      .message {
+        margin-bottom: 10px;
+        padding: 10px;
+        border-radius: 4px;
+        max-width: 80%;
+        clear: both;
+      }
+
+      .message.you {
+        background-color: #dcf8c6;
+        align-self: flex-end;
+        float: right;
+      }
+
+      .message.them {
+        background-color: #ffffff;
+        align-self: flex-start;
+        float: left;
+      }
+
+      #messageInputContainer {
+        display: flex;
+        padding: 10px;
+        background-color: #f0f2f5;
+        border-top: 1px solid #cccccc;
+      }
+
+      #messageInput {
+        flex: 1;
+        padding: 10px;
+        border: 1px solid #cccccc;
+        border-radius: 4px;
+        font-size: 16px;
+      }
+
+      #sendMessageButton {
+        padding: 10px 20px;
+        margin-left: 10px;
+        background-color: #007bff;
+        color: #ffffff;
+        border: none;
+        border-radius: 4px;
+        cursor: pointer;
+        font-size: 16px;
+        transition: background-color 0.3s ease;
+      }
+
+      #sendMessageButton:hover {
+        background-color: #0056b3;
+      }
+
+      /* Scrollbar Styling */
+      #chatWindow::-webkit-scrollbar {
+        width: 8px;
+      }
+
+      #chatWindow::-webkit-scrollbar-track {
+        background: #f1f1f1;
+      }
+
+      #chatWindow::-webkit-scrollbar-thumb {
+        background: #888;
+        border-radius: 4px;
+      }
+
+      #chatWindow::-webkit-scrollbar-thumb:hover {
+        background: #555;
+      }
+    </style>
+  </head>
+  <body>
+    <div id="chatContainer">
+      <div id="chatHeader">
+        <h2 id="chatWith">Chatting with...</h2>
+      </div>
+      <div id="chatWindow">
+        <!-- Messages will appear here -->
+      </div>
+      <div id="messageInputContainer">
+        <input
+          type="text"
+          id="messageInput"
+          placeholder="Type your message here..."
+          autocomplete="off"
+        />
+        <button id="sendMessageButton">Send</button>
+      </div>
+    </div>
+
+    <!-- Socket.io -->
+    <script src="/socket.io/socket.io.js"></script>
+    <!-- Client Script -->
+    <script>
+      const socket = io();
+
+      socket.emit("online");
+
+      socket.on("connect", () => {
+        console.log("Connected as..", socket.id);
+      });
+
+      socket.on("startChat", (data) => {
+        const { room, socketIds } = data;
+        console.log("Chat started in", room, "with", socketIds);
+
+        socket.room = room;
+
+        const otherUserId = socketIds.find((id) => id !== socket.id);
+        document.getElementById(
+          "chatWith"
+        ).innerText = `Chatting with User: ${otherUserId}`;
+
+        socket.otherUserId = otherUserId;
+
+        // Scroll to bottom of chat window
+        const chatWindow = document.getElementById("chatWindow");
+        chatWindow.scrollTop = chatWindow.scrollHeight;
+      });
+
+      socket.on("newMessage", (data) => {
+        const { message, sender } = data;
+        displayMessage(message, sender === socket.id ? "you" : "them");
+      });
+
+      // Function to display messages in the chat window
+      function displayMessage(message, type) {
+        const chatWindow = document.getElementById("chatWindow");
+        const messageElement = document.createElement("div");
+        messageElement.classList.add("message", type);
+        messageElement.innerText = message;
+        chatWindow.appendChild(messageElement);
+        // Scroll to the bottom
+        chatWindow.scrollTop = chatWindow.scrollHeight;
+      }
+
+      // Handle sending messages
+      document
+        .getElementById("sendMessageButton")
+        .addEventListener("click", sendMessage);
+      document
+        .getElementById("messageInput")
+        .addEventListener("keypress", function (e) {
+          if (e.key === "Enter") {
+            sendMessage();
+          }
+        });
+
+      function sendMessage() {
+        const messageInput = document.getElementById("messageInput");
+        const message = messageInput.value.trim();
+
+        if (message && socket.room) {
+          socket.emit("chatMessage", { room: socket.room, message });
+          // Display the message in the sender's chat window
+          displayMessage(message, "you");
+          messageInput.value = "";
+        }
+      }
+    </script>
+  </body>
+</html>

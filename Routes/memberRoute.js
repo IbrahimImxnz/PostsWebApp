@@ -1,6 +1,7 @@
 const express = require("express");
 const memberRouter = express.Router();
 const { param, body, checkExact } = require("express-validator");
+const path = require("path");
 const {
   getMember,
   setMember,
@@ -32,10 +33,16 @@ const sendMessage = require("../Controllers/messageControllers");
 
 memberRouter
   .route("/verifyEmail")
+  .get((req, res) => {
+    res.sendFile(path.join(__dirname, "../html_templates/verifyEmail.html"));
+  })
   .post(emailChecker, validateError, verifyEmail);
 
 memberRouter
   .route("/register")
+  .get((req, res) => {
+    res.sendFile(path.join(__dirname, "../html_templates/register.html"));
+  })
   .post(
     usernameRegistrationChecker,
     passwordChecker,
@@ -59,7 +66,12 @@ memberRouter.route("/").get(
 
 memberRouter
   .route("/login")
-  .post(usernameChecker, passwordChecker, validateError, login);
+  .get((req, res) => {
+    res.sendFile(path.join(__dirname, "../html_templates/login.html"));
+  })
+  .post(usernameChecker, passwordChecker, validateError, login, (req, res) => {
+    res.redirect("../html_templates/chat.html");
+  });
 
 memberRouter
   .route("/update")
@@ -78,6 +90,9 @@ memberRouter
 
 memberRouter
   .route("/logout")
+  .get((req, res) => {
+    res.sendFile(path.join(__dirname, "../html_templates/logout.html"));
+  })
   .post(validateError, authenticateToken, checkToken, logout);
 
 memberRouter

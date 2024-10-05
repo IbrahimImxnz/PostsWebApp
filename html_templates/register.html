@@ -1,0 +1,96 @@
+<!DOCTYPE html>
+<html lang="en">
+  <head>
+    <meta charset="UTF-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1" />
+    <title>Register</title>
+    <link rel="stylesheet" href="/css/style.css" />
+  </head>
+  <body>
+    <div class="form-container">
+      <h2>Register</h2>
+      <form id="registerForm" action="/api/member/register" method="POST">
+        <div class="input-group">
+          <label for="username">Username:</label>
+          <input type="text" id="username" name="username" required />
+        </div>
+
+        <div class="input-group">
+          <label for="email">Email:</label>
+          <input type="email" id="email" name="email" required />
+        </div>
+
+        <div class="input-group">
+          <label for="password">Password:</label>
+          <input type="password" id="password" name="password" required />
+        </div>
+
+        <div class="input-group">
+          <label for="code">Verification Code:</label>
+          <input type="text" id="code" name="code" required />
+        </div>
+
+        <button type="submit">Register</button>
+      </form>
+      <p>
+        Need a verification code?
+        <a href="/api/member/verifyEmail">Verify Email here</a>
+      </p>
+    </div>
+
+    <!-- Messages -->
+    <div id="message"></div>
+
+    <script>
+      document
+        .getElementById("registerForm")
+        .addEventListener("submit", async function (e) {
+          e.preventDefault();
+
+          const formData = {
+            username: e.target.username.value.trim(),
+            email: e.target.email.value.trim(),
+            password: e.target.password.value,
+            code: e.target.code.value.trim(),
+          };
+
+          console.log("Register Form Data:", formData); // Debugging
+
+          try {
+            const response = await fetch("/api/member/register", {
+              method: "POST",
+              headers: {
+                "Content-Type": "application/json",
+              },
+              body: JSON.stringify(formData),
+            });
+
+            const result = await response.json();
+            const messageDiv = document.getElementById("message");
+
+            if (result.success) {
+              messageDiv.innerHTML = `<p class="success">${result.message}</p>`;
+              e.target.reset();
+              // Optionally, redirect to login page
+              setTimeout(() => {
+                window.location.href = "/login.html";
+              }, 2000);
+            } else {
+              // Handle multiple error messages
+              const errorMessages = Array.isArray(result.message)
+                ? result.message
+                    .map((err) => `<p class="error">${err.msg}</p>`)
+                    .join("")
+                : `<p class="error">${result.message}</p>`;
+              messageDiv.innerHTML = errorMessages;
+            }
+          } catch (error) {
+            console.error("Error:", error);
+            document.getElementById(
+              "message"
+            ).innerHTML = `<p class="error">An unexpected error occurred.</p>`;
+          }
+        });
+    </script>
+  </body>
+</html>
