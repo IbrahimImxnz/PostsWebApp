@@ -133,24 +133,29 @@
     <script>
       const socket = io();
 
-      socket.emit("online");
+      const username = localStorage.getItem("username");
+      const accessToken = localStorage.getItem("accessToken");
 
       socket.on("connect", () => {
         console.log("Connected as..", socket.id);
+        socket.emit("login", { accessToken });
+        socket.emit("online");
       });
 
       socket.on("startChat", (data) => {
-        const { room, socketIds } = data;
-        console.log("Chat started in", room, "with", socketIds);
+        const { room, socketIds, members } = data;
+        console.log("Chat started in", room, "with", members);
 
         socket.room = room;
 
         const otherUserId = socketIds.find((id) => id !== socket.id);
+        const otherUsername = members[otherUserId];
         document.getElementById(
           "chatWith"
-        ).innerText = `Chatting with User: ${otherUserId}`;
+        ).innerText = `Chatting with User: ${otherUsername}`;
 
         socket.otherUserId = otherUserId;
+        socket.otherUsername = otherUsername;
 
         // Scroll to bottom of chat window
         const chatWindow = document.getElementById("chatWindow");

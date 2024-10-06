@@ -69,9 +69,8 @@ memberRouter
   .get((req, res) => {
     res.sendFile(path.join(__dirname, "../html_templates/login.html"));
   })
-  .post(usernameChecker, passwordChecker, validateError, login, (req, res) => {
-    res.redirect("../html_templates/chat.html");
-  });
+  .post(usernameChecker, passwordChecker, validateError, login);
+// , (req, res) => {  res.redirect("../html_templates/chat.html");
 
 memberRouter
   .route("/update")

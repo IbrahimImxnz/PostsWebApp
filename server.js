@@ -8,19 +8,40 @@ const postRouter = require("./Routes/postRoute");
 const path = require("path");
 const server = require("http").createServer(app);
 const io = require("socket.io")(server);
+const Member = require("./models/members");
+const asycnHandler = require("express-async-handler");
+const jwt = require("jsonwebtoken");
 
 let onlineMembers = 0;
+//let onlineMembers = [];
 io.on("connection", (socket) => {
+  socket.on("login", async (data) => {
+    const { accessToken } = data;
+    const decodedToken = jwt.verify(
+      accessToken,
+      process.env.ACCESS_TOKEN_SECRET
+    );
+    const userid = decodedToken.id;
+    const member = await Member.findById(userid);
+    socket.username = member.username;
+    console.log(`member logged in: ${socket.username}`);
+  });
+
   socket.on("online", async () => {
     let room = "room" + Math.floor(onlineMembers / 2);
-    console.log("Member online", socket.id);
+    console.log("Member online", socket.id, socket.username);
     onlineMembers++;
     socket.join(room);
 
     if (onlineMembers % 2 === 0) {
       const sockets = await io.in(room).allSockets(); // returns all sockets in room under namespace io
       const socketIds = Array.from(sockets); // gives array of all sockets
-      io.in(room).emit("startChat", { room, socketIds });
+      const members = socketIds.reduce((acc, id) => {
+        const mappedSocket = io.sockets.sockets.get(id);
+        acc[id] = mappedSocket.username;
+        return acc;
+      }, {}); // reduce the array into an object (dictionary) and initiate as empty object
+      io.in(room).emit("startChat", { room, socketIds, members });
     }
   });
 
@@ -31,9 +52,9 @@ io.on("connection", (socket) => {
     // broadcast to everyone but sender
   });
 
-  socket.on("disconnect", () => {
+  socket.on("disconnect", (reason) => {
     onlineMembers--;
-    console.log("Member disconnected", socket.id);
+    console.log("Member disconnected", socket.id, socket.username, reason);
   });
 });
 

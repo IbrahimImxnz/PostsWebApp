@@ -20,7 +20,7 @@
           <input type="password" id="password" name="password" required />
         </div>
 
-        <button type="submit">Login</button>
+        <button type="submit" id="LoginButton">Login</button>
       </form>
       <p>
         Don't have an account? <a href="/api/member/register">Register here</a>
@@ -30,11 +30,14 @@
     <!-- Messages -->
     <div id="message"></div>
 
+    <script src="/socket.io/socket.io.js"></script>
     <script>
+      const socket = io();
+
       document
         .getElementById("loginForm")
         .addEventListener("submit", async function (e) {
-          e.preventDefault();
+          e.preventDefault(); // Prevent form submission and page refresh
 
           const formData = {
             username: e.target.username.value.trim(),
@@ -59,10 +62,13 @@
               messageDiv.innerHTML = `<p class="success">${result.message}</p>`;
               // Store the token in localStorage
               localStorage.setItem("accessToken", result.access_token);
-              // Redirect to a protected route or dashboard
+              localStorage.setItem("username", formData.username);
+              // socket.emit("login", { username: formData.username });
+              // socket.emit("online");
               setTimeout(() => {
                 window.location.href = "/chat.html"; // Adjust as needed
               }, 2000);
+              // Redirect to a protected route or dashboard
             } else {
               const errorMessages = Array.isArray(result.message)
                 ? result.message
@@ -73,9 +79,7 @@
             }
           } catch (error) {
             console.error("Error:", error);
-            document.getElementById(
-              "message"
-            ).innerHTML = `<p class="error">An unexpected error occurred.</p>`;
+            messageDiv.innerHTML = `<p class="error">An unexpected error occurred.</p>`;
           }
         });
     </script>
