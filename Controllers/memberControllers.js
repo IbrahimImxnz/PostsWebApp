@@ -21,6 +21,20 @@ const getMember = asyncHandler(async (req, res) => {
   res.json({ success: true, data: member, message: "Member found" });
 });
 
+const getMemberByUsername = asyncHandler(async (req, res) => {
+  const { username } = req.query;
+  let query = {};
+
+  query.username = username;
+
+  const member = await Member.findOne(query);
+  if (!member)
+    return res
+      .status(404)
+      .json({ success: false, message: "Could not find user" });
+  res.json({ success: true, data: member, message: "Member found" });
+});
+
 const verifyEmail = asyncHandler(async (req, res) => {
   const { email } = req.body;
 
@@ -402,6 +416,7 @@ module.exports = {
   unfollowMember,
   getFollowingFollowers,
   getFavoritePosts,
+  getMemberByUsername,
 };
 
 // ? how to delete all posts of a member after deleting that member

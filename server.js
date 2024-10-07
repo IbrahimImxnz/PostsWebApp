@@ -9,12 +9,16 @@ const path = require("path");
 const server = require("http").createServer(app);
 const io = require("socket.io")(server);
 const Member = require("./models/members");
-const asycnHandler = require("express-async-handler");
 const jwt = require("jsonwebtoken");
 
-let onlineMembers = 0;
-//let onlineMembers = [];
+// let onlineMembers = 0;
+let onlineMembers = new Set();
 io.on("connection", (socket) => {
+  socket.on("room", async (data) => {
+    const { username } = data;
+    onlineMembers.add(username);
+  });
+
   socket.on("login", async (data) => {
     const { accessToken } = data;
     const decodedToken = jwt.verify(
@@ -28,12 +32,17 @@ io.on("connection", (socket) => {
   });
 
   socket.on("online", async () => {
-    let room = "room" + Math.floor(onlineMembers / 2);
+    // let room = "room" + Math.floor(onlineMembers / 2);
     console.log("Member online", socket.id, socket.username);
-    onlineMembers++;
+    onlineMembers.add(socket.username);
     socket.join(room);
 
-    if (onlineMembers % 2 === 0) {
+    if (onlineMembers.size === 2) {
+      let roomids = [];
+      for (let item of onlineMembers) {
+        roomids.append(item);
+      }
+      let room = "room" + roomids[0] + roomids[1];
       const sockets = await io.in(room).allSockets(); // returns all sockets in room under namespace io
       const socketIds = Array.from(sockets); // gives array of all sockets
       const members = socketIds.reduce((acc, id) => {

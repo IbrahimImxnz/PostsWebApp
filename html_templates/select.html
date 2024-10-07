@@ -1,0 +1,76 @@
+<!DOCTYPE html>
+<html lang="en">
+  <head>
+    <meta charset="UTF-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1" />
+    <title>Select User</title>
+    <link rel="stylesheet" href="/css/style.css" />
+  </head>
+  <body>
+    <div class="form-container" action="/api/member/selectUser" method="GET">
+      <h2>Select User</h2>
+      <form id="selectForm">
+        <div class="input-group">
+          <label for="username">Username:</label>
+          <input type="text" id="username" name="username" required />
+        </div>
+        <button type="submit" id="ChatButton">Chat</button>
+      </form>
+    </div>
+
+    <div id="message"></div>
+
+    <script src="/socket.io/socket.io.js"></script>
+    <script>
+      const socket = io();
+      // const Member = require("../models/members");
+
+      document
+        .getElementById("selectForm")
+        .addEventListener("submit", async function (e) {
+          e.preventDefault();
+
+          const username = e.target.username.value.trim();
+          console.log("Select Form Data:", username); // Debugging
+
+          const messageDiv = document.getElementById("message");
+          try {
+            const accessToken = localStorage.getItem("accessToken");
+            const response = await fetch(
+              `http://localhost:7000/api/member/getUsername?username=${encodeURIComponent(
+                username
+              )}`, // Pass the username in the query string
+              {
+                method: "GET",
+                headers: {
+                  Authorization: `Bearer ${accessToken}`,
+                  "Content-Type": "application/json",
+                },
+              }
+            );
+
+            const result = await response.json();
+
+            if (result.success) {
+              messageDiv.innerHTML = `<p class="success">${result.message}</p>`;
+              // Store the username in localStorage
+              localStorage.setItem("username", username);
+              setTimeout(() => {
+                window.location.href = "/chat.html";
+              }, 2000);
+            } else {
+              const errorMessages = Array.isArray(result.message)
+                ? result.message
+                    .map((err) => `<p class="error">${err.msg}</p>`)
+                    .join("")
+                : `<p class="error">${result.message}</p>`;
+              messageDiv.innerHTML = errorMessages;
+            }
+          } catch (error) {
+            console.error("Error:", error);
+            messageDiv.innerHTML = `<p class="error">An unexpected error occurred.</p>`;
+          }
+        });
+    </script>
+  </body>
+</html>

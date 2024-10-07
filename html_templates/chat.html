@@ -138,6 +138,7 @@
 
       socket.on("connect", () => {
         console.log("Connected as..", socket.id);
+        socket.emit("room", { username });
         socket.emit("login", { accessToken });
         socket.emit("online");
       });

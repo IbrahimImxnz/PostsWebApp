@@ -18,6 +18,7 @@ const {
   unfollowMember,
   getFollowingFollowers,
   getFavoritePosts,
+  getMemberByUsername,
 } = require("../Controllers/memberControllers");
 const validateError = require("../Validators/validator");
 const {
@@ -26,10 +27,12 @@ const {
   emailChecker,
   codeChecker,
   usernameRegistrationChecker,
+  usernameCheckerQuery,
 } = require("../Validators/memberValidator");
 const { authenticateToken } = require("../jwtAuthenticator");
 const { checkToken } = require("../redisBlacklist");
 const sendMessage = require("../Controllers/messageControllers");
+const { nextTick } = require("process");
 
 memberRouter
   .route("/verifyEmail")
@@ -63,6 +66,20 @@ memberRouter.route("/").get(
   checkToken,
   getMember
 );
+
+memberRouter.get("/selectUser", (req, res) => {
+  res.sendFile(path.join(__dirname, "../html_templates/select.html"));
+});
+
+memberRouter
+  .route("/getUsername")
+  .get(
+    usernameCheckerQuery,
+    validateError,
+    authenticateToken,
+    checkToken,
+    getMemberByUsername
+  );
 
 memberRouter
   .route("/login")

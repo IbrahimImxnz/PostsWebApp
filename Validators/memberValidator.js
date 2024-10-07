@@ -1,4 +1,4 @@
-const { body } = require("express-validator");
+const { body, query } = require("express-validator");
 const Member = require("../models/members");
 
 const usernameChecker = body("username")
@@ -39,10 +39,17 @@ const codeChecker = body("code")
   .notEmpty()
   .withMessage("Code field is emtpy!");
 
+const usernameCheckerQuery = query("username")
+  .notEmpty()
+  .withMessage("username field is empty!")
+  .isString()
+  .withMessage("username should be a string");
+
 module.exports = {
   usernameChecker,
   passwordChecker,
   emailChecker,
   codeChecker,
   usernameRegistrationChecker,
+  usernameCheckerQuery,
 };
