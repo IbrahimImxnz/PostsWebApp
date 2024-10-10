@@ -7,63 +7,142 @@ const sectionRouter = require("./Routes/sectionRoute");
 const postRouter = require("./Routes/postRoute");
 const path = require("path");
 const server = require("http").createServer(app);
-const io = require("socket.io")(server);
+// const io = require("socket.io")(server);
+const socketio = require("socket.io");
+const io = socketio(server, {
+  cors: {
+    origin: "*", // Replace "*" with your client origin in production
+    methods: ["GET", "POST"],
+  },
+});
 const Member = require("./models/members");
 const jwt = require("jsonwebtoken");
+const asynchandler = require("express-async-handler");
+const { error } = require("console");
 
 // let onlineMembers = 0;
-let onlineMembers = new Set();
+let onlineMembers = new Map(); // map > set to map usernames to sockets
+global.onlineMembers = onlineMembers;
+
 io.on("connection", (socket) => {
-  socket.on("room", async (data) => {
+  global.socket = socket;
+  /*socket.on("room", async (data) => {
     const { username } = data;
     onlineMembers.add(username);
-  });
+  });*/
 
   socket.on("login", async (data) => {
-    const { accessToken } = data;
-    const decodedToken = jwt.verify(
-      accessToken,
-      process.env.ACCESS_TOKEN_SECRET
-    );
-    const userid = decodedToken.id;
-    const member = await Member.findById(userid);
-    socket.username = member.username;
-    console.log(`member logged in: ${socket.username}`);
+    try {
+      const { accessToken } = data;
+      if (!accessToken) {
+        socket.emit("loginResponse", {
+          status: "error",
+          message: "token not found",
+        });
+        return;
+      }
+      const decodedToken = jwt.verify(
+        accessToken,
+        process.env.ACCESS_TOKEN_SECRET
+      );
+      const userid = decodedToken.id;
+      const member = await Member.findById(userid);
+      socket.username = member.username;
+      // xonlineMembers.set(socket.username, socket);
+      console.log(`member logged in: ${socket.username} ${socket.id}`);
+      socket.emit("loginResponse", { status: "ok" });
+    } catch (error) {
+      console.error("Login error:", error);
+      socket.emit("loginResponse", {
+        status: "error",
+        message: "Error login",
+      });
+    }
   });
 
-  socket.on("online", async () => {
-    // let room = "room" + Math.floor(onlineMembers / 2);
-    console.log("Member online", socket.id, socket.username);
-    onlineMembers.add(socket.username);
-    socket.join(room);
+  socket.on("joinRoom", async (data) => {
+    try {
+      const { otherUsername } = data;
+      const currentUsername = socket.username;
 
-    if (onlineMembers.size === 2) {
-      let roomids = [];
-      for (let item of onlineMembers) {
-        roomids.append(item);
+      if (!currentUsername) {
+        socket.emit("joinRoomResponse", {
+          status: "error",
+          messsage: "No username found",
+        });
+        return;
       }
-      let room = "room" + roomids[0] + roomids[1];
-      const sockets = await io.in(room).allSockets(); // returns all sockets in room under namespace io
-      const socketIds = Array.from(sockets); // gives array of all sockets
-      const members = socketIds.reduce((acc, id) => {
-        const mappedSocket = io.sockets.sockets.get(id);
-        acc[id] = mappedSocket.username;
-        return acc;
-      }, {}); // reduce the array into an object (dictionary) and initiate as empty object
-      io.in(room).emit("startChat", { room, socketIds, members });
+
+      if (currentUsername === otherUsername) {
+        socket.emit("joinRoomResponse", {
+          status: "error",
+          messsage: "Cannot chat with yourself",
+        });
+        return;
+      }
+
+      // const room = "room" + currentUsername + otherUsername;
+      const room = `room-${[currentUsername, otherUsername].sort().join("-")}`; // more consistent
+      console.log(room);
+      const otherUser = onlineMembers.get(otherUsername);
+      if (otherUser) {
+        const sockets = await io.allSockets(); // returns all sockets in room under namespace io
+        const socketIds = Array.from(sockets); // gives array of all sockets
+        const otherUserId = socketIds.find((id) => id !== socket.id);
+        const otherSocket = io.sockets.sockets.get(otherUserId);
+
+        socket.join(room);
+        otherSocket.join(room);
+
+        console.log(
+          `Room created: for ${currentUsername} and ${otherUsername}`
+        );
+
+        io.to(room).emit("startChat", {
+          room,
+          // socketIds: [socket.id, otherSocket.id],
+          members: [currentUsername, otherUsername],
+        });
+
+        socket.emit("joinRoomResponse", { status: "ok" });
+      } else {
+        socket.emit("joinRoomResponse", {
+          status: "error",
+          message: "other user is not online",
+        });
+      }
+    } catch (error) {
+      console.error("joinRoom error:", error);
+      socket.emit("joinRoomResponse", {
+        status: "error",
+        message: "error in joining room",
+      });
     }
   });
 
   socket.on("chatMessage", (data) => {
-    const { room, message } = data;
-    console.log(`Message from ${socket.id} : ${message}`);
-    socket.to(room).emit("newMessage", { message, sender: socket.id });
-    // broadcast to everyone but sender
+    try {
+      const { room, message } = data;
+
+      if (!room || !message)
+        return console.error("Invalid chatMessage data:", data);
+
+      console.log(`Message from ${socket.id} : ${message}`);
+      socket.to(room).emit("newMessage", { message, sender: socket.id });
+      // broadcast to everyone but sender
+    } catch (error) {
+      console.error("chatMessage error:", error);
+    }
   });
 
   socket.on("disconnect", (reason) => {
-    onlineMembers--;
-    console.log("Member disconnected", socket.id, socket.username, reason);
+    onlineMembers.delete(socket.username);
+    console.log(
+      "Member disconnected",
+      socket.id,
+      socket.username,
+      `reason is ${reason}`
+    );
   });
 });
 
@@ -86,3 +165,46 @@ const port = process.env.PORT || 7000;
 server.listen(port, () => console.log(`listening to port ${port}`)); // gives server access to socket.io
 
 // module.exports = { io, members };
+
+/*
+socket.on("online", async () => {
+   let room = "room" + Math.floor(onlineMembers / 2);
+  const initialRoom = "room" + socket.username;
+  console.log("Member online", socket.id, socket.username);
+  /* if (!onlineMembers.has(socket.username)) {
+    onlineMembers.add(socket.username);
+  } 
+  socket.join(initialRoom);
+
+  if (onlineMembers.size === 2) {
+    /*let roomids = [];
+    for (let item of onlineMembers) {
+      roomids.push(item);
+    }
+    let room = "room" + roomids[0] + roomids[1];
+    const members = [...onlineMembers.keys()]; // use spread to get keys, a.k.a socket
+    const [member1, member2] = members;
+    let finalRoom = "room" + member1 + member2;
+
+    const socket1 = onlineMembers.get(member1);
+    const socket2 = onlineMembers.get(member2);
+
+    socket1.join(finalRoom);
+    socket2.join(finalRoom);
+    console.log(`${member1} and ${member2} joined the room`);
+    /*
+    const sockets = await io.in(room).allSockets(); // returns all sockets in room under namespace io
+    const socketIds = Array.from(sockets); // gives array of all sockets
+    const members = socketIds.reduce((acc, id) => {
+      const mappedSocket = io.sockets.sockets.get(id);
+      acc[id] = mappedSocket.username;
+      return acc;
+    }, {}); // reduce the array into an object (dictionary) and initiate as empty object *
+    // io.in(room).emit("startChat", { room, socketIds, members });
+    io.in(finalRoom).emit("startChat", {
+      room: finalRoom,
+      socketIds: [socket1.id, socket2.id],
+      members: [member1, member2],
+    });
+  }
+});*/

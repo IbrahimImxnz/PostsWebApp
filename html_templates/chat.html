@@ -5,6 +5,7 @@
     <title>Chat Room</title>
     <link rel="stylesheet" href="/css/style.css" />
     <style>
+      /* Your existing CSS */
       body {
         font-family: Arial, sans-serif;
         background-color: #f0f2f5;
@@ -133,30 +134,58 @@
     <script>
       const socket = io();
 
-      const username = localStorage.getItem("username");
+      // Retrieve the other user's username from localStorage
+      const otherUsername = localStorage.getItem("otherUsername");
       const accessToken = localStorage.getItem("accessToken");
+      // const currentUsername = localStorage.getItem("username");
+
+      if (!accessToken || !otherUsername) {
+        alert(
+          "Missing required information. Please log in and select a user to chat with."
+        );
+        window.location.href = "/api/member/login"; // Redirect to login page or appropriate route
+      }
 
       socket.on("connect", () => {
-        console.log("Connected as..", socket.id);
-        socket.emit("room", { username });
+        console.log("Connected as", socket.id);
+
         socket.emit("login", { accessToken });
-        socket.emit("online");
+      });
+
+      socket.on("loginResponse", (response) => {
+        if (response.status === "ok") {
+          socket.emit("joinRoom", { otherUsername });
+        } else {
+          console.log(response.message);
+          window.location.href = "/api/member/login";
+        }
+      });
+
+      socket.on("joinRoomResponse", (response) => {
+        if (response.status === "ok") {
+          console.log("joined room");
+        } else {
+          console.log(response.message);
+        }
       });
 
       socket.on("startChat", (data) => {
-        const { room, socketIds, members } = data;
+        const { room, members } = data;
+        // const { currentUsername, otherUsername } = members;
         console.log("Chat started in", room, "with", members);
 
         socket.room = room;
 
-        const otherUserId = socketIds.find((id) => id !== socket.id);
-        const otherUsername = members[otherUserId];
+        // Identify the other user
+        // const otherUserId = socketIds.find((id) => id !== socket.id);
+        // const otherUserName = members.find((name) => name !== currentUsername);
+
         document.getElementById(
           "chatWith"
         ).innerText = `Chatting with User: ${otherUsername}`;
 
-        socket.otherUserId = otherUserId;
-        socket.otherUsername = otherUsername;
+        // socket.otherUserId = otherUserId;
+        // socket.otherUsername = otherUserName;
 
         // Scroll to bottom of chat window
         const chatWindow = document.getElementById("chatWindow");
@@ -202,6 +231,12 @@
           messageInput.value = "";
         }
       }
+
+      // socket.emit("room", { username });
+      // socket.emit("login", { accessToken });
+      // socket.emit("joinRoom", { otherUsername });
+      // const otherUserId = socketIds.find((id) => id !== socket.id);
+      // const otherUsername = members[otherUserId];
     </script>
   </body>
 </html>

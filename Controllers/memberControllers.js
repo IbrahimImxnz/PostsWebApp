@@ -134,6 +134,13 @@ const login = asyncHandler(async (req, res) => {
   }
 });
 
+// const onlineMembers = new Map();
+
+const isOnline = asyncHandler(async (req, res) => {
+  onlineMembers.set(req.body.username, true);
+  res.send({ success: true, message: "user adeed to map" });
+});
+
 const updateMember = asyncHandler(async (req, res) => {
   const { username, password } = req.body;
   const salt = 5;
@@ -417,6 +424,8 @@ module.exports = {
   getFollowingFollowers,
   getFavoritePosts,
   getMemberByUsername,
+  //  onlineMembers,
+  isOnline,
 };
 
 // ? how to delete all posts of a member after deleting that member

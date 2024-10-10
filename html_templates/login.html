@@ -58,6 +58,14 @@
             const messageDiv = document.getElementById("message");
 
             if (result.success) {
+              fetch("/api/member/isOnline", {
+                method: "POST",
+                headers: {
+                  "Content-Type": "application/json",
+                },
+                body: JSON.stringify({ username: formData.username }),
+              });
+
               messageDiv.innerHTML = `<p class="success">${result.message}</p>`;
               // Store the token in localStorage
               localStorage.setItem("accessToken", result.access_token);

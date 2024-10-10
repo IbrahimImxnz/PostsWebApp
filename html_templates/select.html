@@ -16,6 +16,7 @@
         </div>
         <button type="submit" id="ChatButton">Chat</button>
       </form>
+      <p>Want to logout? <a href="/api/member/logout">Logout</a></p>
     </div>
 
     <div id="message"></div>
@@ -54,7 +55,7 @@
             if (result.success) {
               messageDiv.innerHTML = `<p class="success">${result.message}</p>`;
               // Store the username in localStorage
-              localStorage.setItem("username", username);
+              localStorage.setItem("otherUsername", username);
               setTimeout(() => {
                 window.location.href = "/chat.html";
               }, 2000);

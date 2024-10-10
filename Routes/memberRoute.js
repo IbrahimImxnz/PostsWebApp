@@ -19,6 +19,7 @@ const {
   getFollowingFollowers,
   getFavoritePosts,
   getMemberByUsername,
+  isOnline,
 } = require("../Controllers/memberControllers");
 const validateError = require("../Validators/validator");
 const {
@@ -68,10 +69,11 @@ memberRouter.route("/").get(
 );
 
 memberRouter.get("/selectUser", (req, res) => {
+  // for loading the page
   res.sendFile(path.join(__dirname, "../html_templates/select.html"));
-});
+}); // separate sendFile from controllers and validators when the request is GET
 
-memberRouter
+memberRouter // for loading the script
   .route("/getUsername")
   .get(
     usernameCheckerQuery,
@@ -88,6 +90,13 @@ memberRouter
   })
   .post(usernameChecker, passwordChecker, validateError, login);
 // , (req, res) => {  res.redirect("../html_templates/chat.html");
+
+memberRouter
+  .route("/isOnline")
+  .get((req, res) => {
+    res.sendFile(path.join(__dirname, "../html_templates/login.html"));
+  })
+  .post(isOnline);
 
 memberRouter
   .route("/update")
