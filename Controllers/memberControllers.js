@@ -137,7 +137,7 @@ const login = asyncHandler(async (req, res) => {
 // const onlineMembers = new Map();
 
 const isOnline = asyncHandler(async (req, res) => {
-  onlineMembers.set(req.body.username, true);
+  onlineMembers.set(req.body.username, new Set());
   res.send({ success: true, message: "user adeed to map" });
 });
 

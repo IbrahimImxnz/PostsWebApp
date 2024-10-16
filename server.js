@@ -48,6 +48,9 @@ io.on("connection", (socket) => {
       const userid = decodedToken.id;
       const member = await Member.findById(userid);
       socket.username = member.username;
+
+      // convert map so it maps username to a set of sockets
+      onlineMembers.get(member.username).add(socket);
       // xonlineMembers.set(socket.username, socket);
       console.log(`member logged in: ${socket.username} ${socket.id}`);
       socket.emit("loginResponse", { status: "ok" });
@@ -81,22 +84,27 @@ io.on("connection", (socket) => {
         return;
       }
 
-      // const room = "room" + currentUsername + otherUsername;
-      const room = `room-${[currentUsername, otherUsername].sort().join("-")}`; // more consistent
-      console.log(room);
-      const otherUser = onlineMembers.get(otherUsername);
-      if (otherUser) {
+      const otherUserSockets = onlineMembers.get(otherUsername);
+      if (otherUserSockets && otherUserSockets.size > 0) {
+        const otherSocket = Array.from(otherUserSockets)[0];
+
+        // const room = "room" + currentUsername + otherUsername;
+        const room = `room-${[currentUsername, otherUsername]
+          .sort()
+          .join("-")}`; // more consistent
+        console.log(room);
+        // const otherUser = onlineMembers.get(otherUsername);
+        /*if (otherUser) {
         const sockets = await io.allSockets(); // returns all sockets in room under namespace io
         const socketIds = Array.from(sockets); // gives array of all sockets
         const otherUserId = socketIds.find((id) => id !== socket.id);
-        const otherSocket = io.sockets.sockets.get(otherUserId);
-
-        socket.join(room);
-        otherSocket.join(room);
+        const otherSocket = io.sockets.sockets.get(otherUserId);*/
 
         console.log(
           `Room created: for ${currentUsername} and ${otherUsername}`
         );
+        socket.join(room);
+        otherSocket.join(room);
 
         io.to(room).emit("startChat", {
           room,
@@ -136,7 +144,13 @@ io.on("connection", (socket) => {
   });
 
   socket.on("disconnect", (reason) => {
-    onlineMembers.delete(socket.username);
+    if (socket.username && onlineMembers.has(socket.username)) {
+      onlineMembers.get(socket.username).delete(socket);
+
+      if (onlineMembers.get(socket.username).size === 0) {
+        onlineMembers.delete(socket.username);
+      }
+    }
     console.log("Member disconnected", socket.id, `reason is ${reason}`);
   });
 });
