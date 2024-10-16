@@ -168,20 +168,21 @@ const updateMember = asyncHandler(async (req, res) => {
 });
 
 const deleteMember = asyncHandler(async (req, res) => {
-  // const member = await Member.findByIdAndDelete(req.userid);
-  const member = await Member.findById(req.userid);
+  const member = await Member.findByIdAndDelete(req.userid);
+  // const member = await Member.findById(req.userid);
   if (!member)
     return res
       .status(404)
       .json({ success: false, message: "Member not found" });
 
-  await member.remove();
+  // await member.remove();
   // const posts = await Post.deleteMany({ member_id: req.userid });
   // const sections = await Section.deleteMany({ member_id: req.userid });
 
   res.json({
     success: true,
-    /*data: member,
+    data: member,
+    /*
     data: posts,
     data: sections,*/
     message: "Member deleted successfully",

@@ -25,7 +25,7 @@ let onlineMembers = new Map(); // map > set to map usernames to sockets
 global.onlineMembers = onlineMembers;
 
 io.on("connection", (socket) => {
-  global.socket = socket;
+  // global.socket = socket;
   /*socket.on("room", async (data) => {
     const { username } = data;
     onlineMembers.add(username);
@@ -68,7 +68,7 @@ io.on("connection", (socket) => {
       if (!currentUsername) {
         socket.emit("joinRoomResponse", {
           status: "error",
-          messsage: "No username found",
+          message: "No username found",
         });
         return;
       }
@@ -76,7 +76,7 @@ io.on("connection", (socket) => {
       if (currentUsername === otherUsername) {
         socket.emit("joinRoomResponse", {
           status: "error",
-          messsage: "Cannot chat with yourself",
+          message: "Cannot chat with yourself",
         });
         return;
       }
@@ -137,12 +137,7 @@ io.on("connection", (socket) => {
 
   socket.on("disconnect", (reason) => {
     onlineMembers.delete(socket.username);
-    console.log(
-      "Member disconnected",
-      socket.id,
-      socket.username,
-      `reason is ${reason}`
-    );
+    console.log("Member disconnected", socket.id, `reason is ${reason}`);
   });
 });
 

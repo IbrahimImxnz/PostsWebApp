@@ -68,7 +68,8 @@
 
               messageDiv.innerHTML = `<p class="success">${result.message}</p>`;
               // Store the token in localStorage
-              localStorage.setItem("accessToken", result.access_token);
+              // localStorage.setItem("accessToken", result.access_token);
+              sessionStorage.setItem("accessToken", result.access_token); // so when we access a 2nd tab
               // socket.emit("login", { username: formData.username });
               // socket.emit("online");
               setTimeout(() => {

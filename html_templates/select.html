@@ -36,7 +36,7 @@
 
           const messageDiv = document.getElementById("message");
           try {
-            const accessToken = localStorage.getItem("accessToken");
+            const accessToken = sessionStorage.getItem("accessToken");
             const response = await fetch(
               `http://localhost:7000/api/member/getUsername?username=${encodeURIComponent(
                 username
@@ -55,7 +55,7 @@
             if (result.success) {
               messageDiv.innerHTML = `<p class="success">${result.message}</p>`;
               // Store the username in localStorage
-              localStorage.setItem("otherUsername", username);
+              sessionStorage.setItem("otherUsername", username);
               setTimeout(() => {
                 window.location.href = "/chat.html";
               }, 2000);
