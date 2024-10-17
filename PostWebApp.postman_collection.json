@@ -1,0 +1,682 @@
+{
+	"info": {
+		"_postman_id": "e7503894-4738-40cb-9044-c78625d04cef",
+		"name": "PostWebApp",
+		"schema": "https://schema.getpostman.com/json/collection/v2.1.0/collection.json",
+		"_exporter_id": "32606497"
+	},
+	"item": [
+		{
+			"name": "set member",
+			"request": {
+				"method": "POST",
+				"header": [],
+				"body": {
+					"mode": "raw",
+					"raw": "{\r\n    \"username\" : 23,\r\n    \"password\" : \"1234\"\r\n}",
+					"options": {
+						"raw": {
+							"language": "json"
+						}
+					}
+				},
+				"url": {
+					"raw": "http://localhost:7000/api/member/register",
+					"protocol": "http",
+					"host": [
+						"localhost"
+					],
+					"port": "7000",
+					"path": [
+						"api",
+						"member",
+						"register"
+					]
+				}
+			},
+			"response": []
+		},
+		{
+			"name": "get member",
+			"request": {
+				"auth": {
+					"type": "bearer",
+					"bearer": [
+						{
+							"key": "token",
+							"value": "eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpZCI6IjY2ZDg2YTliYWM2ZGI0YjE5Y2MzNWJmYyIsImlhdCI6MTcyNTQ1OTA5OX0.udYx_yvmMUv6AukDy4TxnPVEjYe-RdeKlCaY3OaCvfk",
+							"type": "string"
+						}
+					]
+				},
+				"method": "GET",
+				"header": [],
+				"url": {
+					"raw": "http://localhost:7000/api/member",
+					"protocol": "http",
+					"host": [
+						"localhost"
+					],
+					"port": "7000",
+					"path": [
+						"api",
+						"member"
+					]
+				}
+			},
+			"response": []
+		},
+		{
+			"name": "set section",
+			"request": {
+				"method": "POST",
+				"header": [],
+				"body": {
+					"mode": "raw",
+					"raw": "{\r\n    \"name\" : \"Sport\"\r\n}",
+					"options": {
+						"raw": {
+							"language": "json"
+						}
+					}
+				},
+				"url": {
+					"raw": "http://localhost:7000/api/section",
+					"protocol": "http",
+					"host": [
+						"localhost"
+					],
+					"port": "7000",
+					"path": [
+						"api",
+						"section"
+					]
+				}
+			},
+			"response": []
+		},
+		{
+			"name": "get section",
+			"request": {
+				"method": "GET",
+				"header": [],
+				"url": {
+					"raw": "http://localhost:7000/api/section/66d5c4e8d6169fe97f690476",
+					"protocol": "http",
+					"host": [
+						"localhost"
+					],
+					"port": "7000",
+					"path": [
+						"api",
+						"section",
+						"66d5c4e8d6169fe97f690476"
+					]
+				}
+			},
+			"response": []
+		},
+		{
+			"name": "set post",
+			"request": {
+				"auth": {
+					"type": "bearer",
+					"bearer": [
+						{
+							"key": "token",
+							"value": "eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpZCI6IjY2ZDg2YTliYWM2ZGI0YjE5Y2MzNWJmYyIsImlhdCI6MTcyNTQ1OTA5OX0.udYx_yvmMUv6AukDy4TxnPVEjYe-RdeKlCaY3OaCvfk",
+							"type": "string"
+						}
+					]
+				},
+				"method": "POST",
+				"header": [],
+				"body": {
+					"mode": "raw",
+					"raw": "{\r\n    \"title\" : \"football\",\r\n    \"text\" : \"hdifuhsuifhsuidhfusifhusidhfuisdfhsuidfhsuifhiushdfuhffds\",\r\n    \"section_id\" : \"66d5c4e8d6169fe97f690476\"\r\n}",
+					"options": {
+						"raw": {
+							"language": "json"
+						}
+					}
+				},
+				"url": {
+					"raw": "http://localhost:7000/api/post",
+					"protocol": "http",
+					"host": [
+						"localhost"
+					],
+					"port": "7000",
+					"path": [
+						"api",
+						"post"
+					]
+				}
+			},
+			"response": []
+		},
+		{
+			"name": "get post",
+			"request": {
+				"auth": {
+					"type": "bearer",
+					"bearer": [
+						{
+							"key": "token",
+							"value": "{{memberToken}}",
+							"type": "string"
+						}
+					]
+				},
+				"method": "GET",
+				"header": [],
+				"url": {
+					"raw": "http://localhost:7000/api/post?section_id=66e02de66ad9afac995d8157",
+					"protocol": "http",
+					"host": [
+						"localhost"
+					],
+					"port": "7000",
+					"path": [
+						"api",
+						"post"
+					],
+					"query": [
+						{
+							"key": "section_id",
+							"value": "66e02de66ad9afac995d8157"
+						}
+					]
+				}
+			},
+			"response": []
+		},
+		{
+			"name": "login member",
+			"request": {
+				"method": "POST",
+				"header": [],
+				"body": {
+					"mode": "raw",
+					"raw": "{\r\n    \"username\" : \"gamal\",\r\n    \"password\" : \"1234\"\r\n}",
+					"options": {
+						"raw": {
+							"language": "json"
+						}
+					}
+				},
+				"url": {
+					"raw": "http://localhost:7000/api/member/login",
+					"protocol": "http",
+					"host": [
+						"localhost"
+					],
+					"port": "7000",
+					"path": [
+						"api",
+						"member",
+						"login"
+					]
+				}
+			},
+			"response": []
+		},
+		{
+			"name": "get post by title",
+			"request": {
+				"auth": {
+					"type": "bearer",
+					"bearer": [
+						{
+							"key": "token",
+							"value": "",
+							"type": "string"
+						}
+					]
+				},
+				"method": "GET",
+				"header": [],
+				"url": {
+					"raw": "http://localhost:7000/api/post/mother",
+					"protocol": "http",
+					"host": [
+						"localhost"
+					],
+					"port": "7000",
+					"path": [
+						"api",
+						"post",
+						"mother"
+					]
+				}
+			},
+			"response": []
+		},
+		{
+			"name": "get posts by section",
+			"request": {
+				"method": "GET",
+				"header": []
+			},
+			"response": []
+		},
+		{
+			"name": "update post",
+			"request": {
+				"auth": {
+					"type": "bearer",
+					"bearer": [
+						{
+							"key": "token",
+							"value": "eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpZCI6IjY2ZGRiMTBkNDhhNzFhZmFiOTdjYzhkNiIsImlhdCI6MTcyNTgwNDgxM30.WL-xmU75iWEN5CSR7fhlrlNFMPjKWG5Qg_JVB6IhMOA",
+							"type": "string"
+						}
+					]
+				},
+				"method": "PUT",
+				"header": [],
+				"body": {
+					"mode": "raw",
+					"raw": "{\r\n    \"title\" : \"father\"\r\n}",
+					"options": {
+						"raw": {
+							"language": "json"
+						}
+					}
+				},
+				"url": {
+					"raw": "http://localhost:7000/api/post/update/66dec4feadc60068ba49ec2d",
+					"protocol": "http",
+					"host": [
+						"localhost"
+					],
+					"port": "7000",
+					"path": [
+						"api",
+						"post",
+						"update",
+						"66dec4feadc60068ba49ec2d"
+					]
+				}
+			},
+			"response": []
+		},
+		{
+			"name": "update member",
+			"request": {
+				"auth": {
+					"type": "bearer",
+					"bearer": [
+						{
+							"key": "token",
+							"value": "eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpZCI6IjY2ZGRiMTBkNDhhNzFhZmFiOTdjYzhkNiIsImlhdCI6MTcyNTgwNDgxM30.WL-xmU75iWEN5CSR7fhlrlNFMPjKWG5Qg_JVB6IhMOA",
+							"type": "string"
+						}
+					]
+				},
+				"method": "PUT",
+				"header": [],
+				"body": {
+					"mode": "raw",
+					"raw": "{\r\n    \"username\" : \"heema\"\r\n}\r\n",
+					"options": {
+						"raw": {
+							"language": "json"
+						}
+					}
+				},
+				"url": {
+					"raw": "http://localhost:7000/api/member/update",
+					"protocol": "http",
+					"host": [
+						"localhost"
+					],
+					"port": "7000",
+					"path": [
+						"api",
+						"member",
+						"update"
+					]
+				}
+			},
+			"response": []
+		},
+		{
+			"name": "delete post",
+			"request": {
+				"auth": {
+					"type": "bearer",
+					"bearer": [
+						{
+							"key": "token",
+							"value": "{{memberToken}}",
+							"type": "string"
+						}
+					]
+				},
+				"method": "DELETE",
+				"header": [],
+				"url": {
+					"raw": "http://localhost:7000/api/post/delete/66ff2f8b3985d512cce70587",
+					"protocol": "http",
+					"host": [
+						"localhost"
+					],
+					"port": "7000",
+					"path": [
+						"api",
+						"post",
+						"delete",
+						"66ff2f8b3985d512cce70587"
+					]
+				}
+			},
+			"response": []
+		},
+		{
+			"name": "delete member",
+			"request": {
+				"auth": {
+					"type": "bearer",
+					"bearer": [
+						{
+							"key": "token",
+							"value": "eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpZCI6IjY2ZGVmZjJkYTFlOGRhODVkNmVkMDMzMSIsImlhdCI6MTcyNTg5MDM0OX0.46wQu4vdart7PsWMcqJ4CCHop_CrV18jbv5kzIgznlA",
+							"type": "string"
+						}
+					]
+				},
+				"method": "DELETE",
+				"header": [],
+				"url": {
+					"raw": "http://localhost:7000/api/member/delete",
+					"protocol": "http",
+					"host": [
+						"localhost"
+					],
+					"port": "7000",
+					"path": [
+						"api",
+						"member",
+						"delete"
+					]
+				}
+			},
+			"response": []
+		},
+		{
+			"name": "get all sections",
+			"request": {
+				"method": "GET",
+				"header": []
+			},
+			"response": []
+		},
+		{
+			"name": "logout",
+			"request": {
+				"method": "POST",
+				"header": [],
+				"url": {
+					"raw": "http://localhost:7000/api/member/logout",
+					"protocol": "http",
+					"host": [
+						"localhost"
+					],
+					"port": "7000",
+					"path": [
+						"api",
+						"member",
+						"logout"
+					]
+				}
+			},
+			"response": []
+		},
+		{
+			"name": "forgotPassword",
+			"request": {
+				"method": "POST",
+				"header": [],
+				"body": {
+					"mode": "raw",
+					"raw": "{\r\n    \"email\" : \"jokerimxnz@gmail.com\"\r\n}",
+					"options": {
+						"raw": {
+							"language": "json"
+						}
+					}
+				},
+				"url": {
+					"raw": "http://localhost:7000/api/member/forgotPassword",
+					"protocol": "http",
+					"host": [
+						"localhost"
+					],
+					"port": "7000",
+					"path": [
+						"api",
+						"member",
+						"forgotPassword"
+					]
+				}
+			},
+			"response": []
+		},
+		{
+			"name": "resetPassword",
+			"request": {
+				"method": "GET",
+				"header": []
+			},
+			"response": []
+		},
+		{
+			"name": "verifyEmail",
+			"request": {
+				"method": "GET",
+				"header": []
+			},
+			"response": []
+		},
+		{
+			"name": "verifyemailupdate",
+			"request": {
+				"auth": {
+					"type": "bearer",
+					"bearer": [
+						{
+							"key": "token",
+							"value": "{{memberToken}}",
+							"type": "string"
+						}
+					]
+				},
+				"method": "POST",
+				"header": [],
+				"url": {
+					"raw": "http://localhost:7000/api/member/verifyEmailForUpdate",
+					"protocol": "http",
+					"host": [
+						"localhost"
+					],
+					"port": "7000",
+					"path": [
+						"api",
+						"member",
+						"verifyEmailForUpdate"
+					]
+				}
+			},
+			"response": []
+		},
+		{
+			"name": "updateEmail",
+			"request": {
+				"auth": {
+					"type": "bearer",
+					"bearer": [
+						{
+							"key": "token",
+							"value": "{{memberToken}}",
+							"type": "string"
+						}
+					]
+				},
+				"method": "PUT",
+				"header": [],
+				"body": {
+					"mode": "raw",
+					"raw": "{\r\n    \"email\" : \"zzz@gmail.com\",\r\n    \"code\" : 521860434\r\n}",
+					"options": {
+						"raw": {
+							"language": "json"
+						}
+					}
+				},
+				"url": {
+					"raw": "http://localhost:7000/api/member/updateEmail",
+					"protocol": "http",
+					"host": [
+						"localhost"
+					],
+					"port": "7000",
+					"path": [
+						"api",
+						"member",
+						"updateEmail"
+					]
+				}
+			},
+			"response": []
+		},
+		{
+			"name": "followMember",
+			"request": {
+				"method": "POST",
+				"header": []
+			},
+			"response": []
+		},
+		{
+			"name": "getfollowers",
+			"request": {
+				"auth": {
+					"type": "bearer",
+					"bearer": [
+						{
+							"key": "token",
+							"value": "{{memberToken}}",
+							"type": "string"
+						}
+					]
+				},
+				"method": "GET",
+				"header": [],
+				"url": {
+					"raw": "http://localhost:7000/api/member/getFollowersFollowing",
+					"protocol": "http",
+					"host": [
+						"localhost"
+					],
+					"port": "7000",
+					"path": [
+						"api",
+						"member",
+						"getFollowersFollowing"
+					]
+				}
+			},
+			"response": []
+		},
+		{
+			"name": "unfollow",
+			"request": {
+				"auth": {
+					"type": "bearer",
+					"bearer": [
+						{
+							"key": "token",
+							"value": "{{memberToken}}",
+							"type": "string"
+						}
+					]
+				},
+				"method": "POST",
+				"header": [],
+				"body": {
+					"mode": "raw",
+					"raw": "{ \r\n    \"username\" : \"member3\"\r\n}",
+					"options": {
+						"raw": {
+							"language": "json"
+						}
+					}
+				},
+				"url": {
+					"raw": "http://localhost:7000/api/member/unfollowMember",
+					"protocol": "http",
+					"host": [
+						"localhost"
+					],
+					"port": "7000",
+					"path": [
+						"api",
+						"member",
+						"unfollowMember"
+					]
+				}
+			},
+			"response": []
+		},
+		{
+			"name": "favroitePost",
+			"request": {
+				"auth": {
+					"type": "bearer",
+					"bearer": [
+						{
+							"key": "token",
+							"value": "{{memberToken}}",
+							"type": "string"
+						}
+					]
+				},
+				"method": "POST",
+				"header": [],
+				"body": {
+					"mode": "raw",
+					"raw": "{\r\n    \"title\" : \"post1\"\r\n}",
+					"options": {
+						"raw": {
+							"language": "json"
+						}
+					}
+				},
+				"url": {
+					"raw": "http://localhost:7000/api/post/favoritePost/66fcb541a8560dd72c9d93d0",
+					"protocol": "http",
+					"host": [
+						"localhost"
+					],
+					"port": "7000",
+					"path": [
+						"api",
+						"post",
+						"favoritePost",
+						"66fcb541a8560dd72c9d93d0"
+					]
+				}
+			},
+			"response": []
+		},
+		{
+			"name": "getFavoritePosts",
+			"request": {
+				"method": "GET",
+				"header": []
+			},
+			"response": []
+		}
+	]
+}
