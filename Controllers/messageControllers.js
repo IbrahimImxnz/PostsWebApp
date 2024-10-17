@@ -1,20 +1,20 @@
 const Messages = require("../models/messages");
 const asyncHandler = require("express-async-handler");
 
-const sendMessage = asyncHandler(async (req, res) => {
-  const { receiverId, content } = req.body;
-  if (!receiverId)
-    return res
-      .status(404)
-      .json({ success: false, message: "Receiver not found" });
-
+const setMessage = asyncHandler(async (req, res, sender, receiver, content) => {
   const message = await Messages.create({
-    sender: req.userid,
-    receiver: receiverId,
+    sender: sender,
+    receiver: receiver,
     content: content,
   });
 
-  res.json({ success: true, data: message, message: "Message sent" });
+  res.status(201).json({ success: true, message: "New message" });
 });
 
-module.exports = sendMessage;
+// const getMessage
+
+module.exports = { setMessage };
+
+// add messages to database
+
+// ! redundant

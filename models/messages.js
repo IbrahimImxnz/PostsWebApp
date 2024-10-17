@@ -1,19 +1,23 @@
 const mongoose = require("mongoose");
-const Member = require("../models/members");
+// const Member = require("../models/members");
 
 const messagesSchema = mongoose.Schema(
   {
     sender: {
-      type: mongoose.Types.ObjectId,
+      type: String,
       required: true,
-      ref: Member,
+      ref: "Member",
     },
     receiver: {
-      type: mongoose.Types.ObjectId,
+      type: String,
       required: true,
-      ref: Member,
+      ref: "Member",
     },
     content: {
+      type: String,
+      required: true,
+    },
+    room: {
       type: String,
       required: true,
     },

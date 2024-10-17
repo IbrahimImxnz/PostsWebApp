@@ -19,7 +19,8 @@ const Member = require("./models/members");
 const jwt = require("jsonwebtoken");
 const asynchandler = require("express-async-handler");
 const { error } = require("console");
-
+// const { setMessage } = require("./Controllers/messageControllers");
+const Messages = require("./models/messages");
 // let onlineMembers = 0;
 let onlineMembers = new Map(); // map > set to map usernames to sockets
 global.onlineMembers = onlineMembers;
@@ -128,12 +129,20 @@ io.on("connection", (socket) => {
     }
   });
 
-  socket.on("chatMessage", (data) => {
+  socket.on("chatMessage", async (data) => {
     try {
-      const { room, message } = data;
+      const { room, message, otherUsername } = data;
 
       if (!room || !message)
         return console.error("Invalid chatMessage data:", data);
+
+      //await setMessage(socket.username, otherUsername, message);
+      await Messages.create({
+        sender: socket.username,
+        receiver: otherUsername,
+        content: message,
+        room: room,
+      });
 
       console.log(`Message from ${socket.id} : ${message}`);
       socket.to(room).emit("newMessage", { message, sender: socket.id });

@@ -239,7 +239,11 @@
         const message = messageInput.value.trim();
 
         if (message && socket.room) {
-          socket.emit("chatMessage", { room: socket.room, message });
+          socket.emit("chatMessage", {
+            room: socket.room,
+            message,
+            otherUsername,
+          });
           // Display the message in the sender's chat window
           displayMessage(message, "you");
           messageInput.value = "";
