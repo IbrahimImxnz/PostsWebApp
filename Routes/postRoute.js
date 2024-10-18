@@ -22,7 +22,7 @@ const {
   checkMemberId,
 } = require("../Validators/postValidator");
 const { allowedTo } = require("../Controllers/memberControllers");
-
+const { postLimiter } = require("../rateLimit");
 const { authenticateToken } = require("../jwtAuthenticator");
 const { checkToken } = require("../redisBlacklist");
 const { checkExact } = require("express-validator");
@@ -36,6 +36,7 @@ postRouter
     validateError,
     authenticateToken,
     checkToken,
+    postLimiter,
     setPost
   );
 

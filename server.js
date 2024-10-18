@@ -17,6 +17,7 @@ const Messages = require("./models/messages");
 const https = require("https");
 const fs = require("fs");
 const http = require("http");
+const throttler = require("./throttler");
 
 const privateKey = fs.readFileSync(
   path.join(__dirname, "SSL", "server.key"),
@@ -184,8 +185,8 @@ connectDB();
 
 app.use(express.json());
 // app.use(express.urlencoded({extended:false}))
-
 app.use(express.static(path.join(__dirname, "html_templates")));
+app.use(throttler);
 
 app.use("/api/member", memberRouter);
 app.use("/api/section", sectionRouter);
