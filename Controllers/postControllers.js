@@ -2,6 +2,7 @@ const asyncHandler = require("express-async-handler");
 const Post = require("../models/posts");
 const { validationResult } = require("express-validator");
 const Member = require("../models/members");
+const messages = require("../models/messages");
 /*
 const getPost = asyncHandler(async (req, res) => {
   /*const result = validationResult(req)
@@ -191,6 +192,15 @@ const unfavoritePost = asyncHandler(async (req, res) => {
   res.json({ success: true, data: unlikedPost, message: "Post unfavorited" });
 });
 
+const getAllPosts = asyncHandler(async (req, res) => {
+  const posts = await Post.find();
+
+  if (!posts)
+    return res.status(404).json({ success: false, message: "No posts found" });
+
+  res.json({ success: true, data: posts, message: "All posts" });
+});
+
 module.exports = {
   getPost,
   setPost,
@@ -200,4 +210,5 @@ module.exports = {
   deletePost,
   favoritePost,
   unfavoritePost,
+  getAllPosts,
 };

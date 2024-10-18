@@ -9,6 +9,7 @@ const {
   deletePost,
   favoritePost,
   unfavoritePost,
+  getAllPosts,
 } = require("../Controllers/postControllers");
 const validateError = require("../Validators/validator");
 const {
@@ -20,6 +21,7 @@ const {
   checkIdQuery,
   checkMemberId,
 } = require("../Validators/postValidator");
+const { allowedTo } = require("../Controllers/memberControllers");
 
 const { authenticateToken } = require("../jwtAuthenticator");
 const { checkToken } = require("../redisBlacklist");
@@ -98,5 +100,10 @@ postRouter
     checkToken,
     unfavoritePost
   );
+
+postRouter.use(authenticateToken, checkToken, allowedTo("admin"));
+postRouter
+  .route("/getAllPosts")
+  .get(authenticateToken, checkToken, getAllPosts);
 
 module.exports = postRouter;
