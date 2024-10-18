@@ -7,6 +7,7 @@ const { generateAccessToken } = require("../jwtAuthenticator");
 const bcrypt = require("bcrypt");
 const { blacklistToken } = require("../redisBlacklist");
 const sendMail = require("../sendEmail");
+require("dotenv").config();
 
 const getMember = asyncHandler(async (req, res) => {
   /*const result = validationResult(req);
@@ -408,6 +409,50 @@ const getFavoritePosts = asyncHandler(async (req, res) => {
   res.json({ success: true, data: member, message: "Your liked posts" });
 });
 
+const allowedTo = (...roles) =>
+  asyncHandler(async (req, res, next) => {
+    const member = await Member.findById(req.userid);
+    if (!member)
+      return res
+        .status(404)
+        .json({ success: false, message: "Member not found" });
+    if (!roles.includes(member.role)) {
+      return res.status(403).json({
+        success: false,
+        message: "You are not allowed to access this route",
+      });
+    }
+    next();
+  });
+
+const getAllMembers = asyncHandler(async (req, res) => {
+  const members = await Member.find();
+
+  if (!members)
+    return res
+      .status(404)
+      .json({ success: false, message: "No members found" });
+
+  res.json({ success: true, data: members, message: "All members" });
+});
+
+const becomeAdmin = asyncHandler(async (req, res) => {
+  const { username, code } = req.body;
+
+  const member = await Member.findOne({ username: username });
+  if (!member)
+    return res.status(404).json({ success: false, message: "No member found" });
+  if (code !== process.env.ADMIN)
+    return res
+      .status(401)
+      .json({ success: false, message: "Code you provided is invalid" });
+
+  member.role = "admin";
+  await member.save();
+
+  res.json({ success: true, message: `${username} is now an admin!` });
+});
+
 module.exports = {
   getMember,
   setMember,
@@ -427,6 +472,9 @@ module.exports = {
   getMemberByUsername,
   //  onlineMembers,
   isOnline,
+  allowedTo,
+  getAllMembers,
+  becomeAdmin,
 };
 
 // ? how to delete all posts of a member after deleting that member

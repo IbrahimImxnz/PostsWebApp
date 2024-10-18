@@ -29,6 +29,11 @@ const memberSchema = mongoose.Schema(
     following: [{ type: mongoose.Types.ObjectId, ref: "Member" }],
     followers: [{ type: mongoose.Types.ObjectId, ref: "Member" }],
     favorites: [{ type: mongoose.Types.ObjectId, ref: "Post" }],
+    role: {
+      type: String,
+      enum: ["user", "admin"],
+      default: "user",
+    },
   },
   { timestamps: true }
 );

@@ -20,6 +20,9 @@ const {
   getFavoritePosts,
   getMemberByUsername,
   isOnline,
+  allowedTo,
+  getAllMembers,
+  becomeAdmin,
 } = require("../Controllers/memberControllers");
 const validateError = require("../Validators/validator");
 const {
@@ -175,6 +178,15 @@ memberRouter
 memberRouter
   .route("/getFavoritePosts")
   .get(authenticateToken, checkToken, getFavoritePosts);
+
+memberRouter
+  .route("/becomeAdmin")
+  .put(usernameChecker, authenticateToken, checkToken, becomeAdmin);
+
+memberRouter.use(authenticateToken, checkToken, allowedTo("admin"));
+memberRouter
+  .route("/getAllMembers")
+  .get(authenticateToken, checkToken, getAllMembers);
 
 /*memberRouter
   .route("/sendMessage")

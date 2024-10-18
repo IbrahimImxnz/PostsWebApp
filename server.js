@@ -6,21 +6,37 @@ const memberRouter = require("./Routes/memberRoute");
 const sectionRouter = require("./Routes/sectionRoute");
 const postRouter = require("./Routes/postRoute");
 const path = require("path");
-const server = require("http").createServer(app);
+// const server = require("http").createServer(app);
 // const io = require("socket.io")(server);
-const socketio = require("socket.io");
-const io = socketio(server, {
-  cors: {
-    origin: "*", // Replace "*" with your client origin in production
-    methods: ["GET", "POST"],
-  },
-});
 const Member = require("./models/members");
 const jwt = require("jsonwebtoken");
 const asynchandler = require("express-async-handler");
 const { error } = require("console");
 // const { setMessage } = require("./Controllers/messageControllers");
 const Messages = require("./models/messages");
+const https = require("https");
+const fs = require("fs");
+const http = require("http");
+
+const privateKey = fs.readFileSync(
+  path.join(__dirname, "SSL", "server.key"),
+  "utf8"
+);
+const certificate = fs.readFileSync(
+  path.join(__dirname, "SSL", "server.cert"),
+  "utf8"
+); // generated key and certificate (local dev)
+
+const credentials = { key: privateKey, cert: certificate };
+const httpsServer = https.createServer(credentials, app); // create HTTPS server
+
+const socketio = require("socket.io");
+const io = socketio(httpsServer, {
+  cors: {
+    origin: "*", // Replace "*" with your client origin in production
+    methods: ["GET", "POST"],
+  },
+});
 // let onlineMembers = 0;
 let onlineMembers = new Map(); // map > set to map usernames to sockets
 global.onlineMembers = onlineMembers;
@@ -179,8 +195,21 @@ app.get("/", (req, res) => {
   res.redirect("/api/member/register");
 });
 
-const port = process.env.PORT || 7000;
-server.listen(port, () => console.log(`listening to port ${port}`)); // gives server access to socket.io
+const httpServer = http.createServer((req, res) => {
+  res.writeHead(301, { Location: `https://${req.headers.host}${req.url}` });
+  res.end();
+}); // ? created http server that listens for http requests and redirects to https
+// 301 status for moved permanently, response header to browser to move to new url
+// location is destination of redirection, req.headers.host is hostname (localhost:port) and req.url is any path or query after that
+// res.end ends the connection with http
+
+const httpPort = process.env.httpPORT || 80;
+const port = process.env.PORT || 443;
+// const port = process.env.PORT || 7000;
+httpServer.listen(httpPort, () =>
+  console.log(`listening to port ${httpPort} and redirecting to ${port}`)
+);
+httpsServer.listen(port, () => console.log(`listening to port ${port}`)); // gives server access to socket.io
 
 // module.exports = { io, members };
 
