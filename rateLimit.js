@@ -6,10 +6,17 @@ const loginLimiter = rateLimit({
   message: "Too many login attempts, try again later",
 });
 
-const postLimiter = postLimit({
+const postLimiter = rateLimit({
   windowMs: 60 * 60 * 1000,
   max: 10,
   message: "You passed your hourly post limit",
 });
 
 module.exports = { loginLimiter, postLimiter };
+
+// hpp
+// helmet
+// compression
+// csfr
+// CORS for different domains or origins (different ports)
+// API gateway for microservices

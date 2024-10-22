@@ -18,6 +18,9 @@ const https = require("https");
 const fs = require("fs");
 const http = require("http");
 const throttler = require("./throttler");
+const helmet = require("helmet");
+const compression = require("compression");
+const hpp = require("hpp");
 
 const privateKey = fs.readFileSync(
   path.join(__dirname, "SSL", "server.key"),
@@ -187,6 +190,9 @@ app.use(express.json());
 // app.use(express.urlencoded({extended:false}))
 app.use(express.static(path.join(__dirname, "html_templates")));
 app.use(throttler);
+app.use(helmet());
+app.use(compression());
+app.use(hpp());
 
 app.use("/api/member", memberRouter);
 app.use("/api/section", sectionRouter);
