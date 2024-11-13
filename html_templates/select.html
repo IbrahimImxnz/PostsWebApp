@@ -38,7 +38,7 @@
           try {
             const accessToken = sessionStorage.getItem("accessToken");
             const response = await fetch(
-              `http://localhost:7000/api/member/getUsername?username=${encodeURIComponent(
+              `https://localhost:443/api/member/getUsername?username=${encodeURIComponent(
                 username
               )}`, // Pass the username in the query string
               {

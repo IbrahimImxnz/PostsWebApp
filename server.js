@@ -190,9 +190,9 @@ app.use(express.json());
 // app.use(express.urlencoded({extended:false}))
 app.use(express.static(path.join(__dirname, "html_templates")));
 app.use(throttler);
-app.use(helmet());
+// app.use(helmet());
 app.use(compression());
-app.use(hpp());
+// app.use(hpp());
 
 app.use("/api/member", memberRouter);
 app.use("/api/section", sectionRouter);
